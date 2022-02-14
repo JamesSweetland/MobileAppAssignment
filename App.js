@@ -1,20 +1,28 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { Component } from 'react';
+import { Text, TextInput, View, Button, StyleSheet, Alert } from 'react-native';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+class App extends Component {
+  constructor(props){
+    super(props);
+  }
+
+  state = {
+    myState: 'This is a text component, created using state data. It will change or updated on clicking it.'
+  }
+  
+  updateState = () => this.setState({myState: 'The state is updated'})
+
+  render() {
+    return (
+      <View>
+        <Text onPress={this.updateState}>{this.state.myState}</Text>
+      </View>
+    );
+  }
+
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
 });
+
+export default App
