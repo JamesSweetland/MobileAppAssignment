@@ -1,28 +1,21 @@
-import React, { Component } from 'react';
-import { Text, TextInput, View, Button, StyleSheet, Alert } from 'react-native';
+import HomeScreen from './components/HomeScreen';
+import LoginScreen from './components/LoginScreen';
+import SignupScreen from './components/SignupScreen';
+import * as React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-class App extends Component {
-  constructor(props){
-    super(props);
-  }
+const Stack = createNativeStackNavigator();
 
-  state = {
-    myState: 'This is a text component, created using state data. It will change or updated on clicking it.'
-  }
-  
-  updateState = () => this.setState({myState: 'The state is updated'})
-
-  render() {
+export default function App() {
+    
     return (
-      <View>
-        <Text onPress={this.updateState}>{this.state.myState}</Text>
-      </View>
+        <NavigationContainer>
+            <Stack.Navigator initialRouteName="Home" screenOptions={{headerShown: false}}>
+                <Stack.Screen name="Home" component={HomeScreen} />
+                <Stack.Screen name="Login" component={LoginScreen} />
+                <Stack.Screen name="Signup" component={SignupScreen} />
+            </Stack.Navigator>
+        </NavigationContainer>
     );
-  }
-
 }
-
-const styles = StyleSheet.create({
-});
-
-export default App
