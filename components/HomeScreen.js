@@ -6,8 +6,10 @@ class HomeScreen extends Component{
   render(){
     return(
         <View style={styles.container}>
+
           <Text style={styles.title}>SpaceBook</Text>
           <Text style={styles.text}>Welcome to SpaceBook, Please Login or Signup</Text>
+          
           <View style={styles.buttonContainer}>
             <View style={styles.button}>
               <Button
@@ -21,7 +23,8 @@ class HomeScreen extends Component{
                 onPress={() => this.props.navigation.navigate('Signup')}
               />
             </View>
-          </View>          
+          </View>
+
         </View>
     );
   }
