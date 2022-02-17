@@ -1,6 +1,5 @@
-import * as React from 'react';
+import React, { Component } from 'react';
 import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 class SignupScreen extends Component{
 

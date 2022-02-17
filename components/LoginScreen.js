@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { Component } from 'react';
 import { StyleSheet, Text, View ,Button, TextInput, Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
