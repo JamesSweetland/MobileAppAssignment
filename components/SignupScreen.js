@@ -12,6 +12,16 @@ class SignupScreen extends Component{
 
   async signup(){
     try {
+      
+      let fName = this.state.firstName;
+      let lName = this.state.lastName;
+      let email = this.state.email;
+      let pass = this.state.password;
+
+      if(fName == null || lName == null || email == null || pass == null){
+        throw new Error("All fields must be filled in")
+      }
+
       const response = await fetch('http://localhost:3333/api/1.0.0/user',
         {
           method: 'POST',
@@ -62,12 +72,14 @@ class SignupScreen extends Component{
               <Button
                 title='Signup'
                 onPress={() => this.signup()}
+                color="#19a9f7"
               />
             </View>
             <View style={styles.button}>
               <Button
                 title='Back'
                 onPress={() => this.props.navigation.goBack()}
+                color="#19a9f7"
               />
             </View>            
           </View>

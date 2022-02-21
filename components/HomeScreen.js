@@ -15,12 +15,14 @@ class HomeScreen extends Component{
               <Button
                 title="Login"
                 onPress={() => this.props.navigation.navigate('Login')}
+                color="#19a9f7"
               />
             </View>
             <View style={styles.button}>
               <Button
                 title="Signup"
                 onPress={() => this.props.navigation.navigate('Signup')}
+                color="#19a9f7"
               />
             </View>
           </View>

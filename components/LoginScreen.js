@@ -11,13 +11,21 @@ class LoginScreen extends Component{
 
   async login(){
     try {
+
+      let email = this.state.email;
+      let pass = this.state.password;
+
+      if(email == null || pass == null){
+        throw new Error("All fields must be filled in")
+      }
+
       const response = await fetch('http://localhost:3333/api/1.0.0/login',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            "email": this.state.email,
-            "password": this.state.password
+            "email": email,
+            "password": pass
           })
         });
       const responseJson = await response.json();
@@ -54,12 +62,14 @@ class LoginScreen extends Component{
               <Button
                 title='Login'
                 onPress={() =>this.login()}
+                color="#19a9f7"
               />
             </View>
             <View style={styles.button}>
               <Button
                 title='Back'
                 onPress={() =>this.props.navigation.goBack()}
+                color="#19a9f7"
               />
             </View>            
           </View>
