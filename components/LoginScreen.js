@@ -4,7 +4,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 class LoginScreen extends Component{
 
-  state = {  
+  state = {
+    showText: false,
+    errorMsg: "Error",
     email: null,
     password: null
   }  
@@ -16,7 +18,7 @@ class LoginScreen extends Component{
       let pass = this.state.password;
 
       if(email == null || pass == null){
-        throw new Error("All fields must be filled in")
+        throw "All fields must be filled in";
       }
 
       const response = await fetch('http://localhost:3333/api/1.0.0/login',
@@ -36,7 +38,14 @@ class LoginScreen extends Component{
       await AsyncStorage.setItem("token", JSON.stringify(responseJson.token));
 
     } catch (error) {
-      console.error(error);
+      switch (error){
+        case "All fields must be filled in":
+          this.setState({showText : true});
+          this.state.errorMsg = error;
+          break;
+        default:
+          console.error(error);
+      }
     }
   }
 
@@ -44,7 +53,8 @@ class LoginScreen extends Component{
     return(
         <View style={styles.container}>
 
-          <Text>Login Screen</Text>
+          <Text style={styles.title}>SpaceBook</Text>
+          <Text style={styles.text}>Login</Text>
           <TextInput
             style={styles.input}
             placeholder="Email"
@@ -56,6 +66,12 @@ class LoginScreen extends Component{
             onChangeText={value => this.setState({password: value})}
             secureTextEntry={true}
           />
+
+          { this.state.showText &&
+            <Text style={{color:"white", backgroundColor:"red", padding:5, borderRadius: 3}}>
+              {this.state.errorMsg}
+              </Text>
+          }
 
           <View style={styles.buttonContainer}>
             <View style={styles.button}>
@@ -81,16 +97,26 @@ class LoginScreen extends Component{
 
 const styles = StyleSheet.create({
   container: {
-    //marginTop: 100,
+    fontFamily: "Helvetica",
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  title: {
+    color: '#19a9f7',
+    fontWeight: 'bold',
+    fontSize: '400%',
+  },
+  text: {
+    padding: 5,
+    fontSize: '150%',
   },
   input: {
     height: 40,
     margin: 12,
     borderWidth: 1,
     padding: 10,
+    borderRadius: 3,
   },
   buttonContainer: {
     flexDirection: 'row',

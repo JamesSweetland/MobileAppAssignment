@@ -34,6 +34,7 @@ class HomeScreen extends Component{
 
 const styles = StyleSheet.create({
   container: {
+    fontFamily: "Helvetica",
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
@@ -41,10 +42,11 @@ const styles = StyleSheet.create({
   title: {
     color: '#19a9f7',
     fontWeight: 'bold',
-    fontSize: 30,
+    fontSize: '400%',
   },
   text: {
     padding: 20,
+    fontSize: '150%',
   },
   buttonContainer: {
     flexDirection: 'row',
