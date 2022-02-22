@@ -5,48 +5,68 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 class LoginScreen extends Component{
 
   state = {
-    showText: false,
-    errorMsg: "Error",
+    errorMsg: [ "", "" ],
     email: null,
     password: null
-  }  
+  }
 
-  async login(){
-    try {
+  validate = () => {
+    let errors = [ "", "" ];
+      
+    let fields = [
+      this.state.email,
+      this.state.password
+    ];
 
-      let email = this.state.email;
-      let pass = this.state.password;
-
-      if(email == null || pass == null){
-        throw "All fields must be filled in";
-      }
-
-      const response = await fetch('http://localhost:3333/api/1.0.0/login',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            "email": email,
-            "password": pass
-          })
-        });
-      const responseJson = await response.json();
-
-      console.debug("Response Code: " + response.status)
-
-      await AsyncStorage.setItem("userID", JSON.stringify(responseJson.id));
-      await AsyncStorage.setItem("token", JSON.stringify(responseJson.token));
-
-    } catch (error) {
-      switch (error){
-        case "All fields must be filled in":
-          this.setState({showText : true});
-          this.state.errorMsg = error;
-          break;
-        default:
-          console.error(error);
+    for(let i = 0; i < fields.length; i++){
+      if(fields[i] == null){
+        errors[i] = "All fields must be filled in";
       }
     }
+
+    this.setState({ errorMsg: errors });
+
+    for(let i = 0; i < errors.length; i++){
+      if(errors[i] != ""){
+        throw errors[i];
+      }
+    }
+  }
+
+  login = async () => {
+    try {
+      this.validate();
+
+      return fetch("http://localhost:3333/api/1.0.0/login", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "email": this.state.email,
+          "password": this.state.password
+        })
+      })
+      .then((response) => {
+        if(response.status === 200){
+          return response.json()
+        }else if(response.status === 400){
+          throw 'Invalid email or password';
+        }else{
+          throw 'Something went wrong';
+        }
+      })
+      .then(async (responseJson) => {
+
+        await AsyncStorage.setItem("userID", JSON.stringify(responseJson.id));
+        await AsyncStorage.setItem("token", JSON.stringify(responseJson.token));
+
+        this.props.navigation.navigate("Home");
+      })
+    }
+    catch(error) {
+      console.log(error);
+    }      
   }
 
   render(){
@@ -55,25 +75,31 @@ class LoginScreen extends Component{
 
           <Text style={styles.title}>SpaceBook</Text>
           <Text style={styles.text}>Login</Text>
+
           <TextInput
             style={styles.input}
             placeholder="Email"
             onChangeText={value => this.setState({email: value})}
           />
+          { this.state.errorMsg[0] != "" &&
+            <Text style={{color:"white", backgroundColor:"red", padding:5, borderRadius: 3}}>
+              {this.state.errorMsg[0]}
+              </Text>
+          }
+
           <TextInput
             style={styles.input}
             placeholder="Password"
             onChangeText={value => this.setState({password: value})}
             secureTextEntry={true}
           />
-
-          { this.state.showText &&
+          { this.state.errorMsg[1] != "" &&
             <Text style={{color:"white", backgroundColor:"red", padding:5, borderRadius: 3}}>
-              {this.state.errorMsg}
+              {this.state.errorMsg[1]}
               </Text>
           }
-
-          <View style={styles.buttonContainer}>
+          
+          <View>
             <View style={styles.button}>
               <Button
                 title='Login'
@@ -83,11 +109,11 @@ class LoginScreen extends Component{
             </View>
             <View style={styles.button}>
               <Button
-                title='Back'
-                onPress={() =>this.props.navigation.goBack()}
+                title='Create Account'
+                onPress={() =>this.props.navigation.navigate('Signup')}
                 color="#19a9f7"
               />
-            </View>            
+            </View>                                    
           </View>
 
         </View>
@@ -109,7 +135,7 @@ const styles = StyleSheet.create({
   },
   text: {
     padding: 5,
-    fontSize: '150%',
+    fontSize: '120%',
   },
   input: {
     height: 40,
@@ -117,9 +143,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
     borderRadius: 3,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
   },
   button: {
     margin: 10,
