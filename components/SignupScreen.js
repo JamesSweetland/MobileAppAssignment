@@ -4,66 +4,82 @@ import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
 class SignupScreen extends Component{
 
   state = {
+    errorMsg: [ "", "", "", "" ],
     firstName: null,
-    firstNameError : null,
-
     lastName: null,
-    lastNameError: null,
-
     email: null,
-    emailError: null,
-
-    password: null,
-    passwordError: null
+    password: null
   }
 
-  async signup(){
+  validate = () => {
+    let errors = [ "", "", "", "" ];
+      
+    let fields = [
+      this.state.firstName,
+      this.state.lastName,
+      this.state.email,
+      this.state.password
+    ];
+
+    if(!/^[a-zA-Z]+$/i.test(fields[0])){
+      errors[0] = "First name must only contain letters";
+    }
+
+    if(!/^[a-zA-Z]+$/i.test(fields[1])){
+      errors[1] = "Last name must only contain letters";
+    }
+
+    if(!/^\S+@\S+\.\S+$/.test(fields[2])){
+      errors[2] = "Please give a valid email";
+    }
+
+    for(let i = 0; i < fields.length; i++){
+      if(fields[i] == null){
+        errors[i] = "All fields must be filled in";
+      }
+    }
+
+    this.setState({ errorMsg: errors });
+
+    for(let i = 0; i < errors.length; i++){
+      if(errors[i] != ""){
+        throw errors[i];
+      }
+    }
+  }
+
+  signup = () => {
     try {
-      
-      let fName = this.state.firstName;
-      let lName = this.state.lastName;
-      let email = this.state.email;
-      let pass = this.state.password;
+      this.validate();
 
-      if(fName == null || lName == null || email == null || pass == null){        
-        throw "All fields must be filled in";
-      }  
-      else if(!/^[a-zA-Z]+$/.test(fName)){            
-        throw "First Name must be letters";
-      }
-      else if(!/^[a-zA-Z]+$/.test(lName)){
-        throw "Last Name must be letters";
-      }
+      return fetch('http://localhost:3333/api/1.0.0/user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "first_name": this.state.firstName,
+          "last_name": this.state.lastName,
+          "email": this.state.email,
+          "password": this.state.password
+        })
+      })
+      .then((response) => {
+        if(response.status === 201){
+          return response.json()
+        }else if(response.status === 400){
+          throw 'Failed validation';
+        }else{
+          throw 'Something went wrong';
+        }
+      })
+      .then((responseJson) => {
+        console.log("User created with ID: ", responseJson);
 
-      
-
-      const response = await fetch('http://localhost:3333/api/1.0.0/user',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            "first_name": this.state.firstName,
-            "last_name": this.state.lastName,
-            "email": this.state.email,
-            "password": this.state.password
-          })
-        });
-      console.debug("Response Code: " + response.status)
-
-    } catch (error) {
-      switch (error){
-        case "All fields must be filled in":
-          this.setState({passwordError : error});
-          break;
-        case "First Name must be letters":
-          this.setState({firstNameError : error});
-          break;
-        case "Last Name must be letters":
-          this.setState({lastNameError : error});
-          break;
-        default:
-          console.error(error);
-      }      
+        this.props.navigation.navigate("Login");
+      })
+    } catch (error) {      
+      console.error(error);            
     }
   }
 
@@ -79,33 +95,33 @@ class SignupScreen extends Component{
             placeholder="First Name"
             onChangeText={value => this.setState({firstName: value})}
           />
-          { (this.state.firstNameError != null) &&
+          { (this.state.errorMsg[0] != "") &&
             <Text style={{color:"white", backgroundColor:"red", padding:5, borderRadius: 3}}>
-              {this.state.firstNameError}
+              {this.state.errorMsg[0]}
             </Text>
-          }
+          }   
 
           <TextInput
             style={styles.input}
             placeholder="Last Name"
             onChangeText={value => this.setState({lastName: value})}
           />
-          { (this.state.lastNameError != null) &&
+          { (this.state.errorMsg[1] != "") &&
             <Text style={{color:"white", backgroundColor:"red", padding:5, borderRadius: 3}}>
-              {this.state.lastNameError}
+              {this.state.errorMsg[1]}
             </Text>
-          }
+          }   
 
           <TextInput
             style={styles.input}
             placeholder="Email"
             onChangeText={value => this.setState({email: value})}
           />
-          { (this.state.emailError != null) &&
+          { (this.state.errorMsg[2] != "") &&
             <Text style={{color:"white", backgroundColor:"red", padding:5, borderRadius: 3}}>
-              {this.state.firstNameError}
+              {this.state.errorMsg[2]}
             </Text>
-          }
+          }   
 
           <TextInput
             style={styles.input}
@@ -113,9 +129,9 @@ class SignupScreen extends Component{
             onChangeText={value => this.setState({password: value})}
             secureTextEntry={true}
           />
-          { (this.state.passwordError != null) &&
+          { (this.state.errorMsg[3] != "") &&
             <Text style={{color:"white", backgroundColor:"red", padding:5, borderRadius: 3}}>
-              {this.state.passwordError}
+              {this.state.errorMsg[3]}
             </Text>
           }          
 
@@ -155,7 +171,7 @@ const styles = StyleSheet.create({
   },
   text: {
     padding: 5,
-    fontSize: '150%',
+    fontSize: '120%',
   },
   input: {
     height: 40,
