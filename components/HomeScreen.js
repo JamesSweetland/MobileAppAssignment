@@ -1,7 +1,25 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, Button} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 class HomeScreen extends Component{
+
+  componentDidMount() {
+    this.unsubscribe = this.props.navigation.addListener('focus', () => {
+      this.checkLoggedIn();
+    });
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
+
+  checkLoggedIn = async () => {
+    const value = await AsyncStorage.getItem('token');
+    if (value == null) {
+        this.props.navigation.navigate('Login');
+    }
+  };
 
   render(){
     return(
@@ -46,7 +64,7 @@ const styles = StyleSheet.create({
   },
   text: {
     padding: 20,
-    fontSize: '150%',
+    fontSize: '120%',
   },
   buttonContainer: {
     flexDirection: 'row',
