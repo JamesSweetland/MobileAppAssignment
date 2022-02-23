@@ -1,8 +1,19 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Button} from 'react-native';
+import { StyleSheet, View , Button } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ProfileScreen from './ProfileScreen';
+import FriendsScreen from './FriendsScreen';
+import RequestsScreen from './RequestsScreen';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+const Tab = createBottomTabNavigator();
 
 class HomeScreen extends Component{
+
+  constructor(props){
+    super(props);
+  }
 
   componentDidMount() {
     this.unsubscribe = this.props.navigation.addListener('focus', () => {
@@ -17,35 +28,28 @@ class HomeScreen extends Component{
   checkLoggedIn = async () => {
     const value = await AsyncStorage.getItem('token');
     if (value == null) {
-        this.props.navigation.navigate('Login');
+        this.props.navigation.navigate('Login', {});
     }
-  };
+  };  
 
   render(){
     return(
-        <View style={styles.container}>
-
-          <Text style={styles.title}>SpaceBook</Text>
-          <Text style={styles.text}>Welcome to SpaceBook, Please Login or Signup</Text>
-          
-          <View style={styles.buttonContainer}>
-            <View style={styles.button}>
-              <Button
-                title="Login"
-                onPress={() => this.props.navigation.navigate('Login')}
-                color="#19a9f7"
-              />
-            </View>
-            <View style={styles.button}>
-              <Button
-                title="Signup"
-                onPress={() => this.props.navigation.navigate('Signup')}
-                color="#19a9f7"
-              />
-            </View>
-          </View>
-
-        </View>
+      <NavigationContainer independent={true}>
+        <Tab.Navigator initialRouteName="Profile" screenOptions={{headerShown: false}}>
+          <Tab.Screen 
+            name="Requests" 
+            component={RequestsScreen}
+            navigationOptions={{
+              tabBarLabel: "Profile Page",
+              tabBarIcon: ({ tintColor }) => (
+                <Icon name="users" size={30} color="#900" />
+              )
+            }}
+          />
+          <Tab.Screen name="Profile" component={ProfileScreen}/>
+          <Tab.Screen name="Friends" component={FriendsScreen}/>            
+        </Tab.Navigator>
+      </NavigationContainer>            
     );
   }
 }
@@ -53,25 +57,11 @@ class HomeScreen extends Component{
 const styles = StyleSheet.create({
   container: {
     fontFamily: "Helvetica",
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    color: '#19a9f7',
-    fontWeight: 'bold',
-    fontSize: '400%',
-  },
-  text: {
-    padding: 20,
-    fontSize: '120%',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
+    flex: 1
   },
   button: {
     margin: 10,
-  },
+  }
 });
 
 export default HomeScreen;
