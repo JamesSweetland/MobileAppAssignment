@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import { StyleSheet, View , Button } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProfileScreen from './ProfileScreen';
 import FriendsScreen from './FriendsScreen';
 import RequestsScreen from './RequestsScreen';
-import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
 
 const Tab = createBottomTabNavigator();
 
@@ -28,40 +27,49 @@ class HomeScreen extends Component{
   checkLoggedIn = async () => {
     const value = await AsyncStorage.getItem('token');
     if (value == null) {
-        this.props.navigation.navigate('Login', {});
+      this.props.navigation.navigate('Login');
     }
-  };  
+  }
 
   render(){
     return(
-      <NavigationContainer independent={true}>
-        <Tab.Navigator initialRouteName="Profile" screenOptions={{headerShown: false}}>
-          <Tab.Screen 
-            name="Requests" 
-            component={RequestsScreen}
-            navigationOptions={{
-              tabBarLabel: "Profile Page",
-              tabBarIcon: ({ tintColor }) => (
-                <Icon name="users" size={30} color="#900" />
-              )
-            }}
-          />
-          <Tab.Screen name="Profile" component={ProfileScreen}/>
-          <Tab.Screen name="Friends" component={FriendsScreen}/>            
-        </Tab.Navigator>
-      </NavigationContainer>            
+      <Tab.Navigator 
+        initialRouteName="Profile" 
+        screenOptions={{
+          headerShown: false,
+          "tabBarActiveTintColor": "#19a9f7"
+        }}
+      >
+        <Tab.Screen 
+          name="Friends"
+          component={FriendsScreen}
+          options={{
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons name={focused ? "ios-person" : "ios-person-outline"} size={size} color={color} />
+            )
+          }}
+        /> 
+        <Tab.Screen 
+          name="Profile" 
+          component={ProfileScreen}
+          options={{
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons name={focused ? "ios-home" : "ios-home-outline"} color={color} size={size} />
+            )
+          }}
+        />        
+        <Tab.Screen 
+          name="Requests" 
+          component={RequestsScreen}
+          options={{
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons name={focused ? "ios-chatbubbles" : "ios-chatbubbles-outline"} size={size} color={color} />
+            )
+          }}
+        />     
+      </Tab.Navigator>       
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    fontFamily: "Helvetica",
-    flex: 1
-  },
-  button: {
-    margin: 10,
-  }
-});
 
 export default HomeScreen;

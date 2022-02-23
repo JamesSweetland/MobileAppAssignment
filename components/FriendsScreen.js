@@ -30,6 +30,9 @@ const styles = StyleSheet.create({
     text: {
       padding: 5,
       fontSize: '120%',
+    },
+    button: {
+      margin: 10,
     }
 });
 

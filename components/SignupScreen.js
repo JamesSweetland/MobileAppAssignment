@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
   },
   button: {
     margin: 10,
-  },
+  }
 });
 
 export default SignupScreen;
