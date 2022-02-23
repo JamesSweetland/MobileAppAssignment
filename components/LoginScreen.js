@@ -65,7 +65,7 @@ class LoginScreen extends Component{
       })
     }
     catch(error) {
-      console.log(error);
+      console.error(error);
     }      
   }
 
@@ -126,26 +126,26 @@ const styles = StyleSheet.create({
     fontFamily: "Helvetica",
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   title: {
     color: '#19a9f7',
     fontWeight: 'bold',
-    fontSize: '400%',
+    fontSize: '400%'
   },
   text: {
     padding: 5,
-    fontSize: '120%',
+    fontSize: '120%'
   },
   input: {
     height: 40,
     margin: 12,
     borderWidth: 1,
     padding: 10,
-    borderRadius: 3,
+    borderRadius: 3
   },
   button: {
-    margin: 10,
+    margin: 10
   }
 });
 
