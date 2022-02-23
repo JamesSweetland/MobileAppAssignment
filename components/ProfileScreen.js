@@ -3,20 +3,113 @@ import { StyleSheet, Text, View, Button } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 class ProfileScreen extends Component{
-  
-  logout = async () => {    
-    await AsyncStorage.removeItem("userID");
-    await AsyncStorage.removeItem("token");
 
-    this.props.navigation.navigate('Login')
+  state = {
+    userID: null,
+    token: null,
+    fName: null,
+    lName: null,
+    email: null,
+    friendCount: null
+  }
+
+  componentDidMount() {
+    this.unsubscribe = this.props.navigation.addListener('focus', () => {
+      this.getData();
+    });    
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
+
+  getData = async () => {
+    try{
+      let id = await AsyncStorage.getItem('userID');
+      let sessionToken = await AsyncStorage.getItem('token');
+
+      if(sessionToken != null){
+        sessionToken = sessionToken.replaceAll('"', '');
+      }
+      else{
+        return null;
+      }     
+
+      this.setState({
+        userID: id,
+        token: sessionToken
+      })
+
+      return fetch("http://localhost:3333/api/1.0.0/user/" + id, {
+        method: 'GET',
+        headers: {
+          'X-Authorization': sessionToken
+        }
+      })
+      .then((response) => {
+        if(response.status === 200){
+          return response.json()
+        }else if(response.status === 401){
+          this.props.navigation.navigate("Login");
+        }else{
+          throw 'Something went wrong';
+        }
+      })
+      .then((responseJson) => {
+        if(responseJson != undefined){
+          this.setState({
+            fName: responseJson.first_name,
+            lName: responseJson.last_name,
+            email: responseJson.email,
+            friendCount: responseJson.friend_count
+          })
+        }        
+      })
+    }
+    catch(error){
+      console.error(error);
+    }    
+  }
+  
+  logout = async () => {
+    try {
+      let sessionToken = this.state.token;
+
+      return fetch("http://localhost:3333/api/1.0.0/logout", {
+        method: 'POST',
+        headers: {
+          'X-Authorization': sessionToken
+        }
+      })
+      .then( async (response) => {
+        if(response.status === 200 || response.status === 401){
+          await AsyncStorage.removeItem("userID");
+          await AsyncStorage.removeItem("token");
+
+          this.props.navigation.navigate("Login");
+        }
+        else{
+          throw 'Something went wrong';
+        }
+      })
+    }
+    catch(error) {
+      console.error(error);
+    }
   }
   
   render(){
     return(    
       <View style={styles.container}>
+        
+        <View style={styles.header}>
+          <Text style={styles.title}>SpaceBook</Text>
+          <Text style={styles.text}>Profile Screen</Text>
+        </View>        
 
-        <Text style={styles.title}>SpaceBook</Text>
-        <Text style={styles.text}>Profile Screen</Text>
+        <Text>{this.state.fName} {this.state.lName}</Text>
+        <Text>Email: {this.state.email}</Text>
+        <Text>Friends: {this.state.friendCount}</Text>
 
         <View style={styles.button}>
           <Button
@@ -35,17 +128,24 @@ const styles = StyleSheet.create({
   container: {
     fontFamily: "Helvetica",
     flex: 1,
-    alignItems: 'center',
-    //justifyContent: 'center',
+    //alignItems: 'center',
+    //justifyContent: 'center'
   },
-  title: {
+  header: {
+    alignItems: 'center',
+  },
+  title: {    
     color: '#19a9f7',
     fontWeight: 'bold',
-    fontSize: '400%',
+    fontSize: '400%'
   },
   text: {
     padding: 5,
-    fontSize: '120%',
+    fontSize: '120%'
+  },
+  button: {
+    margin: 10,
+    alignItems: 'center'
   }
 });
 
