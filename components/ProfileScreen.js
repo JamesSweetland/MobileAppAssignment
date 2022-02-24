@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, Button, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { render } from 'react-dom';
 
 class ProfileScreen extends Component{
 
   state = {
     userID: null, token: null,
     fName: null, lName: null, email: null, friendCount: null,
-    photo: null
+    photo: null,
+    posts: []
   }
 
   componentDidMount() {
@@ -62,6 +62,7 @@ class ProfileScreen extends Component{
             friendCount: responseJson.friend_count
           })
           this.getProfileImage();
+          this.getPosts();
         }        
       })
     }
@@ -88,6 +89,33 @@ class ProfileScreen extends Component{
     }
     catch(error){
       console.error(error);
+    }
+  }
+
+  getPosts = () => {
+    try{
+      fetch("http://localhost:3333/api/1.0.0/user/" + this.state.userID + "/post", {
+        method: 'GET',
+        headers: {
+          'X-Authorization': this.state.token
+        }
+      })
+      .then((response) => {
+        if(response.status === 200){
+          return response.json()
+        }else if(response.status === 401){
+          this.props.navigation.navigate("Login");
+        }else{
+          throw 'Something went wrong';
+        }
+      })
+      .then((responseJson) =>{     
+        console.log(responseJson);
+        this.setState( { posts: responseJson });
+      })
+    }
+    catch(error){
+
     }
   }
   
@@ -141,6 +169,8 @@ class ProfileScreen extends Component{
         
         <Text>Email: {this.state.email}</Text>
         <Text>Friends: {this.state.friendCount}</Text>
+
+        <Text>{this.state.posts[0]}</Text>
 
         <View style={styles.button}>
           <Button
