@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Button, Image } from 'react-native';
+import { StyleSheet, Text, View, Button, Image, FlatList } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 class ProfileScreen extends Component{
@@ -13,7 +13,7 @@ class ProfileScreen extends Component{
 
   componentDidMount() {
     this.unsubscribe = this.props.navigation.addListener('focus', () => {
-      this.getData();
+      this.getData();      
     });    
   }
 
@@ -31,7 +31,7 @@ class ProfileScreen extends Component{
       }
       else{
         return null;
-      }     
+      }
 
       this.setState({
         userID: id,
@@ -62,13 +62,13 @@ class ProfileScreen extends Component{
             friendCount: responseJson.friend_count
           })
           this.getProfileImage();
-          this.getPosts();
-        }        
+          this.getPosts();       
+        }
       })
     }
     catch(error){
       console.error(error);
-    }    
+    }
   }
 
   getProfileImage = () => {
@@ -102,20 +102,23 @@ class ProfileScreen extends Component{
       })
       .then((response) => {
         if(response.status === 200){
-          return response.json()
+          return response.json();
         }else if(response.status === 401){
           this.props.navigation.navigate("Login");
         }else{
           throw 'Something went wrong';
         }
       })
-      .then((responseJson) =>{     
-        console.log(responseJson);
-        this.setState( { posts: responseJson });
+      .then((responseJson) =>{
+        responseJson.forEach(post => {
+          let date = new Date(post.timestamp)
+          post.timestamp = date.toLocaleTimeString( [], {hour: '2-digit', minute:'2-digit'} ) + " " + date.toLocaleDateString();
+        });
+        this.setState({posts: responseJson})
       })
     }
     catch(error){
-
+      console.error(error);
     }
   }
   
@@ -144,7 +147,7 @@ class ProfileScreen extends Component{
     catch(error) {
       console.error(error);
     }
-  }  
+  }
   
   render(){
     return(    
@@ -159,18 +162,35 @@ class ProfileScreen extends Component{
               uri: this.state.photo
             }}
             style={{
-              width: 300,
-              height: 300,
+              width: 250,
+              height: 250,
               borderRadius: 180,
             }}
           />  
           <Text style={styles.text}>{this.state.fName} {this.state.lName}</Text>
+          <View>
+            <Text style={{fontSize: '100%'}}>Email: {this.state.email}</Text>
+            <Text style={{fontSize: '100%'}}>Friends: {this.state.friendCount}</Text>
+          </View>      
         </View>
         
-        <Text>Email: {this.state.email}</Text>
-        <Text>Friends: {this.state.friendCount}</Text>
+        
 
-        <Text>{this.state.posts[0]}</Text>
+        <FlatList
+          data={this.state.posts}
+          renderItem={({item}) => (
+            <View style={ styles.post }>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={{ fontWeight: 'bold', /*fontSize: '100%'*/ }}>{item.author.first_name} {item.author.last_name}</Text>
+                <Text>{item.timestamp}</Text>
+              </View>              
+              <Text style={{ margin: 5}}>{item.text}</Text>
+              <Text>Likes: {item.numLikes}</Text>
+            </View>
+          )}
+          keyExtractor={(item,index) => item.post_id.toString()}
+          style={{ padding: 5 }}
+        />
 
         <View style={styles.button}>
           <Button
@@ -208,6 +228,12 @@ const styles = StyleSheet.create({
   button: {
     margin: 10,
     alignItems: 'center'
+  },
+  post: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 3,
+    margin: 5,
+    padding: 5
   }
 });
 
