@@ -1,16 +1,14 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import { StyleSheet, Text, View, Button, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { render } from 'react-dom';
 
 class ProfileScreen extends Component{
 
   state = {
-    userID: null,
-    token: null,
-    fName: null,
-    lName: null,
-    email: null,
-    friendCount: null
+    userID: null, token: null,
+    fName: null, lName: null, email: null, friendCount: null,
+    photo: null
   }
 
   componentDidMount() {
@@ -63,12 +61,34 @@ class ProfileScreen extends Component{
             email: responseJson.email,
             friendCount: responseJson.friend_count
           })
+          this.getProfileImage();
         }        
       })
     }
     catch(error){
       console.error(error);
     }    
+  }
+
+  getProfileImage = () => {
+    try{
+      fetch("http://localhost:3333/api/1.0.0/user/" + /*this.state.id*/ 1 + "/photo", {
+        method: 'GET',
+        headers: {
+          'X-Authorization': this.state.token
+        }
+      })
+      .then((response) => {
+        return response.blob();
+      })
+      .then((responseBlob) => {
+        let data = URL.createObjectURL(responseBlob);
+        this.setState({ photo: data });
+      });
+    }
+    catch(error){
+      console.error(error);
+    }
   }
   
   logout = async () => {
@@ -96,7 +116,7 @@ class ProfileScreen extends Component{
     catch(error) {
       console.error(error);
     }
-  }
+  }  
   
   render(){
     return(    
@@ -105,9 +125,20 @@ class ProfileScreen extends Component{
         <View style={styles.header}>
           <Text style={styles.title}>SpaceBook</Text>
           <Text style={styles.text}>Profile Screen</Text>
-        </View>        
 
-        <Text>{this.state.fName} {this.state.lName}</Text>
+          <Image
+            source={{
+              uri: this.state.photo
+            }}
+            style={{
+              width: 300,
+              height: 300,
+              borderRadius: 180,
+            }}
+          />  
+          <Text style={styles.text}>{this.state.fName} {this.state.lName}</Text>
+        </View>
+        
         <Text>Email: {this.state.email}</Text>
         <Text>Friends: {this.state.friendCount}</Text>
 
@@ -127,11 +158,12 @@ class ProfileScreen extends Component{
 const styles = StyleSheet.create({
   container: {
     fontFamily: "Helvetica",
-    flex: 1,
-    //alignItems: 'center',
-    //justifyContent: 'center'
+    flex: 1
   },
   header: {
+    alignItems: 'center',
+  },
+  image: {
     alignItems: 'center',
   },
   title: {    
