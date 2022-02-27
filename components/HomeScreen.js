@@ -45,7 +45,7 @@ class HomeScreen extends Component{
           component={FriendsScreen}
           options={{
             tabBarIcon: ({ color, size, focused }) => (
-              <Ionicons name={focused ? "ios-person" : "ios-person-outline"} size={size} color={color} />
+              <Ionicons name={focused ? "ios-people" : "ios-people-outline"} size={size} color={color} />
             )
           }}
         /> 
