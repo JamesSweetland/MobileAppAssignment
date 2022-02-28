@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, FlatList} from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, FlatList } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 class SearchScreen extends Component{
@@ -12,17 +12,18 @@ class SearchScreen extends Component{
 
   search = async () => {
     try{
-      let sessionToken = await AsyncStorage.getItem('token');
+      let sessionToken;
 
-      if(sessionToken != null){
-        sessionToken = sessionToken.replaceAll('"', '');
+      //gets authorisation token from async storage if it hasn't been set yet
+      if(this.state.token == null){
+        sessionToken = await AsyncStorage.getItem('token');
+        this.setState({ token: sessionToken });
       }
       else{
-        return null;
-      }     
+        sessionToken = this.state.token;
+      } 
 
-      this.setState({ token: sessionToken })
-
+      //sends a search request to the server
       return fetch("http://localhost:3333/api/1.0.0/search?q=" + this.state.query, {
         method: 'GET',
         headers: {
@@ -30,9 +31,10 @@ class SearchScreen extends Component{
         }
       })
       .then((response) => {
+        //checks the response code before returning the json
         if(response.status === 200){
           return response.json()
-        }else if(response.status === 401){
+        }else if(response.status === 401){ //if not authorised then redirect to login
           this.props.navigation.navigate("Login");
         }else{
           throw 'Something went wrong';
@@ -53,9 +55,8 @@ class SearchScreen extends Component{
     return(
       <View style={styles.container}>
 
-        <View style={styles.header}>
+        <View style={{ alignItems: 'center' }}>
           <Text style={styles.title}>SpaceBook</Text>
-          <Text style={styles.text}>Friend Screen</Text>
         </View> 
         
         <View style={styles.searchContainer}>
@@ -98,21 +99,15 @@ const styles = StyleSheet.create({
       fontFamily: "Helvetica",
       flex: 1
     },
-    header: {
-      alignItems: 'center',
-    },
     title: {
       color: '#19a9f7',
       fontWeight: 'bold',
       fontSize: '400%',
     },
-    text: {
-      padding: 5,
-      fontSize: '120%',
-    },
     searchContainer: {
       flexDirection: 'row',
-      justifyContent: 'center'
+      justifyContent: 'center',
+      alignItems: 'center'
     },
     resultsContainer: {
         flexDirection: 'row',

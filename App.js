@@ -1,4 +1,4 @@
-import HomeScreen from './components/HomeScreen';
+import MainNav from './components/MainNav';
 import LoginScreen from './components/LoginScreen';
 import SignupScreen from './components/SignupScreen';
 import * as React from 'react';
@@ -11,8 +11,8 @@ export default function App() {
     
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName="Home" screenOptions={{headerShown: false}}>
-                <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Navigator initialRouteName="Main" screenOptions={{headerShown: false}}>
+                <Stack.Screen name="Main" component={MainNav} />
                 <Stack.Screen name="Login" component={LoginScreen} />
                 <Stack.Screen name="Signup" component={SignupScreen} />
             </Stack.Navigator>

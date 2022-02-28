@@ -158,7 +158,6 @@ class ProfileScreen extends Component{
         <View style={{ alignItems: 'center' }}>
 
           <Text style={styles.title}>SpaceBook</Text>
-          <Text style={styles.text}>Profile Screen</Text>
 
           <Image source={{ uri: this.state.photo }} style={ styles.image } />
           <Text style={styles.text}>{this.state.fName} {this.state.lName}</Text>

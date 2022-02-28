@@ -66,6 +66,15 @@ class RequestsScreen extends Component{
     }
   }
 
+  handleRequest = (method) => {
+    try{
+      return fetch
+    }
+    catch(error){
+      console.error(error);
+    }
+  }
+
   render(){
     return(
       <View style={styles.container}>
