@@ -10,8 +10,9 @@ class ProfileScreen extends Component{
     photo: null,
     posts: []
   }
-
+  
   componentDidMount() {
+    //refreshes data if this page is focused
     this.unsubscribe = this.props.navigation.addListener('focus', () => {
       this.getData();      
     });    
@@ -23,21 +24,16 @@ class ProfileScreen extends Component{
 
   getData = async () => {
     try{
+      //gets the signed in user's ID and authorisation token in async storage
       let id = await AsyncStorage.getItem('userID');
       let sessionToken = await AsyncStorage.getItem('token');
-
-      if(sessionToken != null){
-        sessionToken = sessionToken.replaceAll('"', '');
-      }
-      else{
-        return null;
-      }
 
       this.setState({
         userID: id,
         token: sessionToken
       })
 
+      //gets signed in user's data
       return fetch("http://localhost:3333/api/1.0.0/user/" + id, {
         method: 'GET',
         headers: {
@@ -45,9 +41,10 @@ class ProfileScreen extends Component{
         }
       })
       .then((response) => {
+        //checks the response code before returning the json
         if(response.status === 200){
           return response.json()
-        }else if(response.status === 401){
+        }else if(response.status === 401){//if not authorised then redirect to login
           this.props.navigation.navigate("Login");
         }else{
           throw 'Something went wrong';
@@ -61,8 +58,8 @@ class ProfileScreen extends Component{
             email: responseJson.email,
             friendCount: responseJson.friend_count
           })
-          this.getProfileImage();
-          this.getPosts();       
+          this.getProfileImage(); //gets profile pic
+          this.getPosts(); //gets users posts     
         }
       })
     }
@@ -73,6 +70,7 @@ class ProfileScreen extends Component{
 
   getProfileImage = () => {
     try{
+      //sends a get request to the server to get the signed in user's photo
       fetch("http://localhost:3333/api/1.0.0/user/" + /*this.state.id*/ 1 + "/photo", {
         method: 'GET',
         headers: {
@@ -94,6 +92,7 @@ class ProfileScreen extends Component{
 
   getPosts = () => {
     try{
+      //sends a get request to the server to get the signed in user's posts
       fetch("http://localhost:3333/api/1.0.0/user/" + this.state.userID + "/post", {
         method: 'GET',
         headers: {
@@ -111,6 +110,7 @@ class ProfileScreen extends Component{
       })
       .then((responseJson) =>{
         responseJson.forEach(post => {
+          //converts date and time to a format based on the local settings
           let date = new Date(post.timestamp)
           post.timestamp = date.toLocaleTimeString( [], {hour: '2-digit', minute:'2-digit'} ) + " " + date.toLocaleDateString();
         });
@@ -126,6 +126,7 @@ class ProfileScreen extends Component{
     try {
       let sessionToken = this.state.token;
 
+      //sends a logout request to the server
       return fetch("http://localhost:3333/api/1.0.0/logout", {
         method: 'POST',
         headers: {
@@ -134,10 +135,11 @@ class ProfileScreen extends Component{
       })
       .then( async (response) => {
         if(response.status === 200 || response.status === 401){
+          //removes the logged in user's ID and authorisation token from async storage
           await AsyncStorage.removeItem("userID");
           await AsyncStorage.removeItem("token");
 
-          this.props.navigation.navigate("Login");
+          this.props.navigation.navigate("Login");//navigates to the login
         }
         else{
           throw 'Something went wrong';
@@ -153,25 +155,19 @@ class ProfileScreen extends Component{
     return(    
       <View style={styles.container}>
         
-        <View style={styles.header}>
+        <View style={{ alignItems: 'center' }}>
+
           <Text style={styles.title}>SpaceBook</Text>
           <Text style={styles.text}>Profile Screen</Text>
 
-          <Image
-            source={{
-              uri: this.state.photo
-            }}
-            style={{
-              width: 250,
-              height: 250,
-              borderRadius: 180,
-            }}
-          />  
+          <Image source={{ uri: this.state.photo }} style={ styles.image } />
           <Text style={styles.text}>{this.state.fName} {this.state.lName}</Text>
+
           <View>
             <Text style={{fontSize: '100%'}}>Email: {this.state.email}</Text>
             <Text style={{fontSize: '100%'}}>Friends: {this.state.friendCount}</Text>
-          </View>      
+          </View>
+
         </View>
         
         
@@ -181,7 +177,7 @@ class ProfileScreen extends Component{
           renderItem={({item}) => (
             <View style={ styles.post }>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text style={{ fontWeight: 'bold', /*fontSize: '100%'*/ }}>{item.author.first_name} {item.author.last_name}</Text>
+                <Text style={{ fontWeight: 'bold' }}>{item.author.first_name} {item.author.last_name}</Text>
                 <Text>{item.timestamp}</Text>
               </View>              
               <Text style={{ margin: 5}}>{item.text}</Text>
@@ -210,11 +206,11 @@ const styles = StyleSheet.create({
     fontFamily: "Helvetica",
     flex: 1
   },
-  header: {
-    alignItems: 'center',
-  },
   image: {
     alignItems: 'center',
+    width: 250,
+    height: 250,
+    borderRadius: 180
   },
   title: {    
     color: '#19a9f7',

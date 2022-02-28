@@ -10,21 +10,19 @@ const Tab = createBottomTabNavigator();
 
 class HomeScreen extends Component{
 
-  constructor(props){
-    super(props);
-  }
-
   componentDidMount() {
+    //checks user is logged in if this page is focused
     this.unsubscribe = this.props.navigation.addListener('focus', () => {
       this.checkLoggedIn();
     });
   }
 
   componentWillUnmount() {
-    this.unsubscribe();
+    this.unsubscribe(); //cancels listener when component is unmounted
   }
 
   checkLoggedIn = async () => {
+    //checks if token exists in async storage
     const value = await AsyncStorage.getItem('token');
     if (value == null) {
       this.props.navigation.navigate('Login');

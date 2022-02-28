@@ -5,19 +5,26 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 class LoginScreen extends Component{
 
   state = {
-    errorMsg: [ "", "" ],
+    errorMsg: [ "", "" ], //an array of the messages that are displayed if the input is invalid
     email: null,
     password: null
   }
 
   validate = () => {
-    let errors = [ "", "" ];
-      
+    let errors = [ "", "" ]; //an array to hold the error messages
+    
+    //loads fields into an array
     let fields = [
       this.state.email,
       this.state.password
     ];
 
+    //uses regex to check email is a valid format
+    if(!/^\S+@\S+\.\S+$/.test(fields[0])){
+      errors[0] = "The email supplied is not a valid format";
+    }
+
+    //checks each field is not empty
     for(let i = 0; i < fields.length; i++){
       if(fields[i] == null){
         errors[i] = "All fields must be filled in";
@@ -26,6 +33,7 @@ class LoginScreen extends Component{
 
     this.setState({ errorMsg: errors });
 
+    //throws error if any field is invalid
     for(let i = 0; i < errors.length; i++){
       if(errors[i] != ""){
         throw errors[i];
@@ -35,8 +43,9 @@ class LoginScreen extends Component{
 
   login = async () => {
     try {
-      this.validate();
+      this.validate(); //checks fields are valid
 
+      //sends login request to server
       return fetch("http://localhost:3333/api/1.0.0/login", {
         method: 'POST',
         headers: {
@@ -48,6 +57,7 @@ class LoginScreen extends Component{
         })
       })
       .then((response) => {
+        //checks the response code before returning the json
         if(response.status === 200){
           return response.json()
         }else if(response.status === 400){
@@ -58,10 +68,11 @@ class LoginScreen extends Component{
       })
       .then(async (responseJson) => {
 
+        //sets the signed in user's ID and authorisation token in async storage
         await AsyncStorage.setItem("userID", JSON.stringify(responseJson.id));
-        await AsyncStorage.setItem("token", JSON.stringify(responseJson.token));
-
-        this.props.navigation.navigate("Home");
+        await AsyncStorage.setItem("token", JSON.stringify(responseJson.token).replaceAll('"', ''));//removes speakmarks from token
+        
+        this.props.navigation.navigate("Home");//navigates to the home page
       })
     }
     catch(error) {
@@ -81,10 +92,11 @@ class LoginScreen extends Component{
             placeholder="Email"
             onChangeText={value => this.setState({email: value})}
           />
-          { this.state.errorMsg[0] != "" &&
+          { //the display box for the email field error message
+            this.state.errorMsg[0] != "" /* Only displays if there is a message to be displayed */ &&
             <Text style={{color:"white", backgroundColor:"red", padding:5, borderRadius: 3}}>
               {this.state.errorMsg[0]}
-              </Text>
+            </Text>
           }
 
           <TextInput
@@ -93,10 +105,11 @@ class LoginScreen extends Component{
             onChangeText={value => this.setState({password: value})}
             secureTextEntry={true}
           />
-          { this.state.errorMsg[1] != "" &&
+          { //the display box for the password field error message
+            this.state.errorMsg[1] != "" /* Only displays if there is a message to be displayed */ &&
             <Text style={{color:"white", backgroundColor:"red", padding:5, borderRadius: 3}}>
               {this.state.errorMsg[1]}
-              </Text>
+            </Text>
           }
           
           <View>
