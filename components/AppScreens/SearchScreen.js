@@ -5,23 +5,28 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 class SearchScreen extends Component{
 
   state = {
+    userID: null,
     token: null,
     query: null,
     results: [],
+    friends: []
   }
 
-  search = async () => {
-    try{
-      let sessionToken;
+  componentDidMount() {
+    //refreshes data if this page is focused
+    this.unsubscribe = this.props.navigation.addListener('focus', () => {
+      this.getFriends();      
+    });    
+  }
 
-      //gets authorisation token from async storage if it hasn't been set yet
-      if(this.state.token == null){
-        sessionToken = await AsyncStorage.getItem('token');
-        this.setState({ token: sessionToken });
-      }
-      else{
-        sessionToken = this.state.token;
-      } 
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
+
+  search = () => {
+    try{
+      
+      let sessionToken = this.state.token;       
 
       //sends a search request to the server
       return fetch("http://localhost:3333/api/1.0.0/search?q=" + this.state.query, {
@@ -51,46 +56,171 @@ class SearchScreen extends Component{
     }
   }
 
+  sendFriend = (userID) => {
+    try{
+      
+      let sessionToken = this.state.token;     
+
+      //sends a search request to the server
+      return fetch("http://localhost:3333/api/1.0.0/user/" + userID + "/friends", {
+        method: 'POST',
+        headers: {
+          'X-Authorization': sessionToken
+        }
+      })
+      .then((response) => {
+        //checks the response code before returning the json
+        if(response.status === 200){
+          console.log('Friend Request Sent')
+        }else if(response.status === 401){ //if not authorised then redirect to login
+          this.props.navigation.navigate("Login");
+        }else{
+          throw 'Something went wrong';
+        }
+      })
+    }
+    catch(error){
+      console.error(error);
+    }
+  }
+
+  getFriends = async () => {
+    try{
+      let id;
+      let sessionToken;
+
+      //gets authorisation token from async storage if it hasn't been set yet
+      if(this.state.token == null){
+        id = await AsyncStorage.getItem('userID')
+        sessionToken = await AsyncStorage.getItem('token');
+        this.setState({
+          userID: id,
+          token: sessionToken
+        });
+      }
+      else{
+        id = this.state.userID;
+        sessionToken = this.state.token;
+      }
+
+      //sends a search request to the server
+      return fetch("http://localhost:3333/api/1.0.0/user/" + id + "/friends", {
+        method: 'GET',
+        headers: {
+          'X-Authorization': sessionToken
+        }
+      })
+      .then((response) => {
+        //checks the response code before returning the json
+        if(response.status === 200){
+          return response.json()
+        }else if(response.status === 401){ //if not authorised then redirect to login
+          this.props.navigation.navigate("Login");
+        }else{
+          throw 'Something went wrong';
+        }
+      })
+      .then((responseJson) => {
+        if(responseJson.length != 0){      
+          this.setState({ friends: responseJson });
+        }        
+      })
+    }
+    catch(error){
+      console.error(error);
+    }    
+  }
+
   render(){
-    return(
-      <View style={styles.container}>
-
-        <View style={{ alignItems: 'center' }}>
-          <Text style={styles.title}>SpaceBook</Text>
-        </View> 
-        
-        <View style={styles.searchContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Search"
-            onChangeText={value => this.setState({query: value})}
-          />
-          <View style={styles.button}>
-            <Button
-              title='Search'
-              onPress={() =>this.search()}
-              color="#19a9f7"
+    if(this.state.results.length == 0){//if there hasn't been a search yet or there are no results show friends instead
+      return(
+        <View style={styles.container}>
+  
+          <View style={{ alignItems: 'center' }}>
+            <Text style={styles.title}>SpaceBook</Text>
+          </View> 
+          
+          <View style={styles.searchContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Search"
+              onChangeText={value => this.setState({query: value})}
             />
-          </View>
-        </View>
-
-        <FlatList
-          data={this.state.results}
-          renderItem={({item}) => (
-            <View style={ styles.resultsContainer }>          
-              <Text>{item.user_givenname} {item.user_familyname}</Text>
+            <View style={styles.button}>
               <Button
-                title='View Profile'
-                onPress={() =>this.props.navigation.navigate('FriendProfile')}
+                title='Search'
+                onPress={() =>this.search()}
                 color="#19a9f7"
               />
             </View>
-          )}
-          keyExtractor={(item,index) => item.user_id.toString()}
-          style={{ padding: 5 }}
-        />
-      </View>
-    );
+          </View>
+
+          <Text>Your Friends:</Text>
+          
+          <FlatList
+            data={this.state.friends}
+            renderItem={({item}) => (
+              <View style={ styles.resultsContainer }>          
+                <Text>{item.user_givenname} {item.user_familyname}</Text>
+                <Button
+                  title='View Profile'
+                  onPress={() =>this.props.navigation.navigate('FriendsScreen')}
+                  color="#19a9f7"
+                />
+              </View>
+            )}
+            keyExtractor={(item,index) => item.user_id.toString()}
+            style={{ padding: 5 }}
+          />
+        </View>
+      );
+    }
+    else{
+      return(
+        <View style={styles.container}>
+  
+          <View style={{ alignItems: 'center' }}>
+            <Text style={styles.title}>SpaceBook</Text>
+          </View> 
+          
+          <View style={styles.searchContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Search"
+              onChangeText={value => this.setState({query: value})}
+            />
+            <View style={styles.button}>
+              <Button
+                title='Search'
+                onPress={() =>this.search()}
+                color="#19a9f7"
+              />
+            </View>
+          </View>
+          
+          <FlatList
+            data={this.state.results}
+            renderItem={({item}) => (
+              <View style={ styles.resultsContainer }>          
+                <Text>{item.user_givenname} {item.user_familyname}</Text>
+                <Button
+                  title='View Profile'
+                  onPress={() =>this.props.navigation.navigate('FriendsScreen')}
+                  color="#19a9f7"
+                />
+                <Button
+                  title='Add Friend'
+                  onPress={() =>this.sendFriend(item.user_id)}
+                  color="#19a9f7"
+                />
+              </View>
+            )}
+            keyExtractor={(item,index) => item.user_id.toString()}
+            style={{ padding: 5 }}
+          />
+        </View>
+      );
+    }    
   }
 }
 
@@ -102,7 +232,7 @@ const styles = StyleSheet.create({
     title: {
       color: '#19a9f7',
       fontWeight: 'bold',
-      fontSize: '400%',
+      fontSize: 'min(16vw, 500%)'//css sets title to 16% of the viewpoint width but never more than the font size 500%
     },
     searchContainer: {
       flexDirection: 'row',
