@@ -82,7 +82,7 @@ class SignupScreen extends Component{
         }
       })
       .then((responseJson) => {
-        console.log("User created with ID: ", responseJson);
+        console.log("User created with ID:", responseJson.id);
 
         this.props.navigation.navigate("Login"); //navigates to the login page
       })
@@ -174,29 +174,29 @@ const styles = StyleSheet.create({
     fontFamily: "Helvetica",
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   title: {
     color: '#19a9f7',
     fontWeight: 'bold',
-    fontSize: '400%',
+    fontSize: 'min(16vw, 500%)'//css sets title to 16% of the viewpoint width but never more than the font size 500%
   },
   text: {
     padding: 5,
-    fontSize: '120%',
+    fontSize: '120%'
   },
   input: {
     height: 40,
     margin: 12,
     borderWidth: 1,
     padding: 10,
-    borderRadius: 3,
+    borderRadius: 3
   },
   buttonContainer: {
-    flexDirection: 'row',
+    flexDirection: 'row'
   },
   button: {
-    margin: 10,
+    margin: 10
   }
 });
 

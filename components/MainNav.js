@@ -11,7 +11,8 @@ const Tab = createBottomTabNavigator();
 class MainNav extends Component{
 
   componentDidMount() {
-    //checks user is logged in if this page is focused
+    //checks user is logged in when page is first loaded and if this page is focused
+    this.checkLoggedIn();
     this.unsubscribe = this.props.navigation.addListener('focus', () => {
       this.checkLoggedIn();
     });

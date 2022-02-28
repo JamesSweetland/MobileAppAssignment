@@ -207,14 +207,14 @@ const styles = StyleSheet.create({
   },
   image: {
     alignItems: 'center',
-    width: 250,
-    height: 250,
+    width: 'min(30vh, 70vw, 250px)',
+    height: 'min(30vh, 70vw, 250px)',
     borderRadius: 180
   },
   title: {    
     color: '#19a9f7',
     fontWeight: 'bold',
-    fontSize: '400%'
+    fontSize: 'min(16vw, 500%)'//css sets title to 16% of the viewpoint width but never more than the font size 500%
   },
   text: {
     padding: 5,

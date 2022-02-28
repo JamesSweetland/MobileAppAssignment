@@ -43,6 +43,9 @@ class LoginScreen extends Component{
 
   login = async () => {
     try {
+      await AsyncStorage.removeItem("userID");
+      await AsyncStorage.removeItem("token");
+
       this.validate(); //checks fields are valid
 
       //sends login request to server
@@ -144,7 +147,7 @@ const styles = StyleSheet.create({
   title: {
     color: '#19a9f7',
     fontWeight: 'bold',
-    fontSize: '400%'
+    fontSize: 'min(16vw, 500%)'//css sets title to 16% of the viewpoint width but never more than the font size 500%
   },
   text: {
     padding: 5,
