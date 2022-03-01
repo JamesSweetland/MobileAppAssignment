@@ -5,8 +5,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 class SearchScreen extends Component{
 
   state = {
-    userID: null,
-    token: null,
     query: null,
     results: [],
     friends: []
@@ -15,7 +13,7 @@ class SearchScreen extends Component{
   componentDidMount() {
     //refreshes data if this page is focused
     this.unsubscribe = this.props.navigation.addListener('focus', () => {
-      this.getFriends();      
+      this.getFriends();
     });    
   }
 
@@ -23,113 +21,99 @@ class SearchScreen extends Component{
     this.unsubscribe();
   }
 
-  search = () => {
-    try{
-      
-      let sessionToken = this.state.token;       
-
-      //sends a search request to the server
-      return fetch("http://localhost:3333/api/1.0.0/search?q=" + this.state.query, {
-        method: 'GET',
-        headers: {
-          'X-Authorization': sessionToken
-        }
-      })
-      .then((response) => {
-        //checks the response code before returning the json
-        if(response.status === 200){
-          return response.json()
-        }else if(response.status === 401){ //if not authorised then redirect to login
-          this.props.navigation.navigate("Login");
-        }else{
-          throw 'Something went wrong';
-        }
-      })
-      .then((responseJson) => {
-        if(responseJson.length != 0){            
-          this.setState({ results: responseJson });
-        }        
-      })
-    }
-    catch(error){
-      console.error(error);
-    }
-  }
-
-  sendFriend = (userID) => {
-    try{
-      
-      let sessionToken = this.state.token;     
-
-      //sends a search request to the server
-      return fetch("http://localhost:3333/api/1.0.0/user/" + userID + "/friends", {
-        method: 'POST',
-        headers: {
-          'X-Authorization': sessionToken
-        }
-      })
-      .then((response) => {
-        //checks the response code before returning the json
-        if(response.status === 200){
-          console.log('Friend Request Sent')
-        }else if(response.status === 401){ //if not authorised then redirect to login
-          this.props.navigation.navigate("Login");
-        }else{
-          throw 'Something went wrong';
-        }
-      })
-    }
-    catch(error){
-      console.error(error);
-    }
-  }
-
   getFriends = async () => {
-    try{
-      let id;
-      let sessionToken;
+    //gets the signed in user's ID and authorisation token in async storage      
+    let id = await AsyncStorage.getItem('userID')
+    let sessionToken = await AsyncStorage.getItem('token');
+    
 
-      //gets authorisation token from async storage if it hasn't been set yet
-      if(this.state.token == null){
-        id = await AsyncStorage.getItem('userID')
-        sessionToken = await AsyncStorage.getItem('token');
-        this.setState({
-          userID: id,
-          token: sessionToken
-        });
+    //sends a search request to the server
+    return fetch("http://localhost:3333/api/1.0.0/user/" + id + "/friends", {
+      method: 'GET',
+      headers: {
+        'X-Authorization': sessionToken
       }
-      else{
-        id = this.state.userID;
-        sessionToken = this.state.token;
+    })
+    .then((response) => {
+      //checks the response code before returning the json
+      if(response.status === 200){
+        return response.json()
+      }else if(response.status === 401){ //if not authorised then redirect to login
+        this.props.navigation.navigate("Login");
+      }else{
+        throw 'Something went wrong';
       }
-
-      //sends a search request to the server
-      return fetch("http://localhost:3333/api/1.0.0/user/" + id + "/friends", {
-        method: 'GET',
-        headers: {
-          'X-Authorization': sessionToken
-        }
-      })
-      .then((response) => {
-        //checks the response code before returning the json
-        if(response.status === 200){
-          return response.json()
-        }else if(response.status === 401){ //if not authorised then redirect to login
-          this.props.navigation.navigate("Login");
-        }else{
-          throw 'Something went wrong';
-        }
-      })
-      .then((responseJson) => {
-        if(responseJson.length != 0){      
-          this.setState({ friends: responseJson });
-        }        
-      })
-    }
-    catch(error){
+    })
+    .then((responseJson) => {
+      if(responseJson.length != 0){      
+        this.setState({ friends: responseJson });
+      }        
+    })
+    .catch((error) => {
       console.error(error);
-    }    
+    })  
   }
+
+  search = async () => {      
+    let sessionToken = await AsyncStorage.getItem('token');     
+
+    //sends a search request to the server
+    return fetch("http://localhost:3333/api/1.0.0/search?q=" + this.state.query, {
+      method: 'GET',
+      headers: {
+        'X-Authorization': sessionToken
+      }
+    })
+    .then((response) => {
+      //checks the response code before returning the json
+      if(response.status === 200){
+        return response.json()
+      }else if(response.status === 401){ //if not authorised then redirect to login
+        this.props.navigation.navigate("Login");
+      }else{
+        throw 'Something went wrong';
+      }
+    })
+    .then((responseJson) => {
+      if(responseJson.length != 0){            
+        this.setState({ results: responseJson });
+      }        
+    })
+    .catch((error) => {
+      console.error(error);
+    })
+  }
+
+  viewProfile = async (userID) => {
+    await AsyncStorage.setItem("profileID", userID);
+
+    this.props.navigation.navigate('FriendsScreen')
+  }
+
+  sendFriend = async (userID) => {    
+    let sessionToken = await AsyncStorage.getItem('token');    
+
+    //sends a search request to the server
+    return fetch("http://localhost:3333/api/1.0.0/user/" + userID + "/friends", {
+      method: 'POST',
+      headers: {
+        'X-Authorization': sessionToken
+      }
+    })
+    .then((response) => {
+      //checks the response code before returning the json
+      if(response.status === 201){
+        console.log('Friend Request Sent')
+      }else if(response.status === 401){ //if not authorised then redirect to login
+        this.props.navigation.navigate("Login");
+      }else{
+        throw 'Something went wrong';
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    })
+  }  
 
   render(){
     if(this.state.results.length == 0){//if there hasn't been a search yet or there are no results show friends instead
@@ -164,7 +148,7 @@ class SearchScreen extends Component{
                 <Text>{item.user_givenname} {item.user_familyname}</Text>
                 <Button
                   title='View Profile'
-                  onPress={() =>this.props.navigation.navigate('FriendsScreen')}
+                  onPress={() => this.viewProfile(item.user_id)}
                   color="#19a9f7"
                 />
               </View>
@@ -205,7 +189,7 @@ class SearchScreen extends Component{
                 <Text>{item.user_givenname} {item.user_familyname}</Text>
                 <Button
                   title='View Profile'
-                  onPress={() =>this.props.navigation.navigate('FriendsScreen')}
+                  onPress={() => this.viewProfile(item.user_id)}
                   color="#19a9f7"
                 />
                 <Button
@@ -218,6 +202,14 @@ class SearchScreen extends Component{
             keyExtractor={(item,index) => item.user_id.toString()}
             style={{ padding: 5 }}
           />
+
+          <View style={styles.cancelButton}>
+            <Button
+              title='Cancel'
+              onPress={() => this.setState({ results: [] })}
+              color="#19a9f7"
+            />
+          </View>
         </View>
       );
     }    
@@ -258,6 +250,10 @@ const styles = StyleSheet.create({
     },
     button: {
       flex: 1,
+      margin: 10,
+      alignItems: 'center',
+    },
+    cancelButton: {
       margin: 10,
       alignItems: 'center',
     }
