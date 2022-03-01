@@ -42,45 +42,43 @@ class LoginScreen extends Component{
   }
 
   login = async () => {
-    try {
-      await AsyncStorage.removeItem("userID");
-      await AsyncStorage.removeItem("token");
+    await AsyncStorage.removeItem("userID");
+    await AsyncStorage.removeItem("token");
 
-      this.validate(); //checks fields are valid
+    this.validate(); //checks fields are valid
 
-      //sends login request to server
-      return fetch("http://localhost:3333/api/1.0.0/login", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          "email": this.state.email,
-          "password": this.state.password
-        })
+    //sends login request to server
+    return fetch("http://localhost:3333/api/1.0.0/login", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "email": this.state.email,
+        "password": this.state.password
       })
-      .then((response) => {
-        //checks the response code before returning the json
-        if(response.status === 200){
-          return response.json()
-        }else if(response.status === 400){
-          throw 'Invalid email or password';
-        }else{
-          throw 'Something went wrong';
-        }
-      })
-      .then(async (responseJson) => {
+    })
+    .then((response) => {
+      //checks the response code before returning the json
+      if(response.status === 200){
+        return response.json()
+      }else if(response.status === 400){
+        throw 'Invalid email or password';
+      }else{
+        throw 'Something went wrong';
+      }
+    })
+    .then(async (responseJson) => {
 
-        //sets the signed in user's ID and authorisation token in async storage
-        await AsyncStorage.setItem("userID", JSON.stringify(responseJson.id));
-        await AsyncStorage.setItem("token", JSON.stringify(responseJson.token).replaceAll('"', ''));//removes speakmarks from token
+      //sets the signed in user's ID and authorisation token in async storage
+      await AsyncStorage.setItem("userID", JSON.stringify(responseJson.id));
+      await AsyncStorage.setItem("token", JSON.stringify(responseJson.token).replaceAll('"', ''));//removes speakmarks from token
         
-        this.props.navigation.navigate("Home");//navigates to the home page
-      })
-    }
-    catch(error) {
+      this.props.navigation.navigate("Home");//navigates to the home page
+    })
+    .catch((error) => {
       console.error(error);
-    }      
+    })   
   }
 
   render(){

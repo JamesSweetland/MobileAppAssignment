@@ -22,74 +22,59 @@ class RequestsScreen extends Component{
   }
 
   getRequests = async () => {
-    try{
-      let id;
-      let sessionToken;
-      
-      //gets authorisation token from async storage if it hasn't been set yet
-      if(this.state.token == null){
-        sessionToken = await AsyncStorage.getItem('token');
-        id = await AsyncStorage.getItem('userID');
-        this.setState({
-          userID: id,
-          token: sessionToken 
-        });
-      }
-      else{
-        sessionToken = this.state.token;
-      }      
+    //gets the authorisation token in async storage
+    let sessionToken = await AsyncStorage.getItem('token');     
 
-      return fetch("http://localhost:3333/api/1.0.0/friendrequests", {
-        method: 'GET',
-        headers: {
-          'X-Authorization': sessionToken
-        }
-      })
-      .then((response) => {
-        //checks the response code before returning the json
-        if(response.status === 200){
-          return response.json()
-        }else if(response.status === 401){//if not authorised then redirect to login
-          this.props.navigation.navigate("Login");
-        }else{
-          throw 'Something went wrong';
-        }
-      })
-      .then((responseJson) => {          
-        this.setState({ requests: responseJson });
-      })
-    }
-    catch(error){
+    return fetch("http://localhost:3333/api/1.0.0/friendrequests", {
+      method: 'GET',
+      headers: {
+        'X-Authorization': sessionToken
+      }
+    })
+    .then((response) => {
+      //checks the response code before returning the json
+      if(response.status === 200){
+        return response.json()
+      }else if(response.status === 401){//if not authorised then redirect to login
+        this.props.navigation.navigate("Login");
+      }else{
+        throw 'Something went wrong';
+      }
+    })
+    .then((responseJson) => {          
+      this.setState({ requests: responseJson });
+    })
+    .catch((error) => {
       console.error(error);
-    }
+    })
   }
 
-  handleRequest = (methodType, userID) => {
-    try{
-      let sessionToken = this.state.token;
+  handleRequest = async (methodType, userID) => {
+    //gets the authorisation token in async storage
+    let sessionToken = await AsyncStorage.getItem('token');
 
-      return fetch("http://localhost:3333/api/1.0.0/friendrequests/" + userID, {
-        method: methodType,
-        headers: {
-          'X-Authorization': sessionToken
-        }
-      })
-      .then((response) => {
-        //checks the response code before returning the json
-        if(response.status === 200){
-          console.log(methodType + 'ED request');
-        }else if(response.status === 401){//if not authorised then redirect to login
-          this.props.navigation.navigate("Login");
-        }else if(response.status === 401){
-          throw 'User Not Found';
-        }else{
-          throw 'Something went wrong';
-        }
-      })
-    }
-    catch(error){
+    return fetch("http://localhost:3333/api/1.0.0/friendrequests/" + userID, {
+      method: methodType,
+      headers: {
+        'X-Authorization': sessionToken
+      }
+    })
+    .then((response) => {
+      //checks the response code before returning the json
+      if(response.status === 200){
+        console.log(methodType + ' request');
+        this.getRequests();
+      }else if(response.status === 401){//if not authorised then redirect to login
+        this.props.navigation.navigate("Login");
+      }else if(response.status === 401){
+        throw 'User Not Found';
+      }else{
+        throw 'Something went wrong';
+      }
+    })
+    .catch((error) => {
       console.error(error);
-    }
+    })
   }
 
   render(){
