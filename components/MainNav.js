@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ProfileScreen from './AppScreens/ProfileScreen';
-import HomeScreen from './AppScreens/HomeScreen';
-import RequestsScreen from './AppScreens/RequestsScreen';
+import ProfileScreen from './Profile Screens/ProfileScreen';
+import SearchNav from './Seach Screens/SearchNav';
+import RequestsScreen from './Profile Screens/RequestsScreen';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -33,27 +33,27 @@ class MainNav extends Component{
   render(){
     return(
       <Tab.Navigator 
-        initialRouteName="Profile" 
+        initialRouteName="Home" 
         screenOptions={{
           headerShown: false,
           "tabBarActiveTintColor": "#19a9f7"
         }}
       >
         <Tab.Screen 
-          name="Profile"
+          name="Home"
           component={ProfileScreen}
           options={{
             tabBarIcon: ({ color, size, focused }) => (
-              <Ionicons name={focused ? "ios-person" : "ios-person-outline"} size={size} color={color} />
+              <Ionicons name={focused ? "ios-home" : "ios-home-outline"} size={size} color={color} />
             )
           }}
         /> 
         <Tab.Screen 
-          name="Home" 
-          component={HomeScreen}
+          name="Search" 
+          component={SearchNav}
           options={{
             tabBarIcon: ({ color, size, focused }) => (
-              <Ionicons name={focused ? "ios-home" : "ios-home-outline"} color={color} size={size} />
+              <Ionicons name={focused ? "ios-search" : "ios-search-outline"} color={color} size={size} />
             )
           }}
         />        
