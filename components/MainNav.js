@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProfileScreen from './Profile Screens/ProfileScreen';
-import SearchNav from './Seach Screens/SearchNav';
+import SearchNav from './Search Screens/SearchNav';
 import RequestsScreen from './Profile Screens/RequestsScreen';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
