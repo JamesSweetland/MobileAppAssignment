@@ -39,7 +39,7 @@ class SignupScreen extends Component{
     
     //checks each field is not empty
     for(let i = 0; i < fields.length; i++){
-      if(fields[i] == null){
+      if(fields[i] == null || fields[i] == ""){
         errors[i] = "All fields must be filled in";
       }
     }
@@ -72,10 +72,10 @@ class SignupScreen extends Component{
     })
     .then((response) => {
       //checks the response code before returning the json
-      if(response.status === 201){
+      if(response.status === 201){ //201 = Created
         return response.json()
-      }else if(response.status === 400){
-        throw 'Failed validation';
+      }else if(response.status === 400){ //400 = Bad Request        
+        throw 'Failed Validation';
       }else{
         throw 'Something went wrong';
       }
@@ -86,7 +86,16 @@ class SignupScreen extends Component{
       this.props.navigation.navigate("Login"); //navigates to the login page
     })
     .catch((error) => {
-      console.error(error);
+      let errors = [ "", "", "", ""];
+      if(error == 'Failed Validation'){
+        errors[3] = "Your Details are not valid";
+      }
+      else{
+        errors[3] = error + ", please try again";
+      }
+      //displays error message to user and in debug console
+      this.setState({ errorMsg: errors });
+      console.error(error); 
     })
   }
 

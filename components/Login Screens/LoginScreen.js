@@ -61,11 +61,9 @@ class LoginScreen extends Component{
     })
     .then((response) => {
       //checks the response code before returning the json
-      if(response.status === 200){
+      if(response.status === 200){ //200 = ok
         return response.json()
-      }else if(response.status === 400){
-        let errors = [ "Invalid email or password", "Invalid email or password" ]; //an array to hold the error messages
-        this.setState({ errorMsg: errors });
+      }else if(response.status === 400){ //400 = Bad Request   
         throw 'Invalid email or password';
       }else{
         throw 'Something went wrong';
@@ -80,7 +78,16 @@ class LoginScreen extends Component{
       this.props.navigation.navigate("Home");//navigates to the home page
     })
     .catch((error) => {
-      console.error(error);
+      let errors = [ "", "" ];
+      if(error == 'Invalid email or password'){
+        errors[1] = error;
+      }
+      else{
+        errors[1] = error + ", please try again";
+      }
+      //displays error message to user and in debug console
+      this.setState({ errorMsg: errors });
+      console.error(error);      
     })   
   }
 
