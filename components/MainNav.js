@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ProfileScreen from './Profile Screens/ProfileScreen';
+import ProfileScreen from './Profile Screens/ProfileNav';
 import SearchNav from './Search Screens/SearchNav';
 import RequestsScreen from './Profile Screens/RequestsScreen';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';

@@ -266,13 +266,22 @@ class ProfileScreen extends Component{
           style={{ padding: 5 }}
         />
 
-        <View style={styles.button}>
-          <Button
-            title='Logout'
-            onPress={() =>this.logout()}
-            color="#19a9f7"
-          />
-        </View>
+        <View style={{ flexDirection: 'row', justifyContent: 'center'}}>
+          <View style={styles.button}>
+            <Button
+              title='Edit Profile'
+              onPress={() =>this.props.navigation.navigate('ProfilePic')}
+              color="#19a9f7"
+            />
+          </View>
+          <View style={styles.button}>
+            <Button
+              title='Logout'
+              onPress={() =>this.logout()}
+              color="red"
+            />
+          </View>
+        </View>        
         
       </View>
     );
