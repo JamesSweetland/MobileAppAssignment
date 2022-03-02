@@ -26,7 +26,7 @@ class LoginScreen extends Component{
 
     //checks each field is not empty
     for(let i = 0; i < fields.length; i++){
-      if(fields[i] == null){
+      if(fields[i] == null || fields[i] == ""){
         errors[i] = "All fields must be filled in";
       }
     }
@@ -42,6 +42,7 @@ class LoginScreen extends Component{
   }
 
   login = async () => {
+    //clears stored values
     await AsyncStorage.removeItem("userID");
     await AsyncStorage.removeItem("token");
 
@@ -63,6 +64,8 @@ class LoginScreen extends Component{
       if(response.status === 200){
         return response.json()
       }else if(response.status === 400){
+        let errors = [ "Invalid email or password", "Invalid email or password" ]; //an array to hold the error messages
+        this.setState({ errorMsg: errors });
         throw 'Invalid email or password';
       }else{
         throw 'Something went wrong';
