@@ -257,7 +257,7 @@ class ProfileScreen extends Component{
                 <Button
                   title='Delete'
                   onPress={() =>this.deletePost(item.post_id)}
-                  color="#19a9f7"
+                  color="red"
                 />                               
               </View>
             </View>

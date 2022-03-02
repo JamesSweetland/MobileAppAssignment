@@ -226,7 +226,7 @@ class FriendsScreen extends Component{
                   <Button
                     title='Unlike'
                     onPress={() =>this.likePost('DELETE', item.post_id)}
-                    color="#19a9f7"
+                    color="red"
                   />                               
                 </View>
               </View>

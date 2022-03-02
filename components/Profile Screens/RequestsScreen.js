@@ -84,11 +84,11 @@ class RequestsScreen extends Component{
           
           <View style={{ alignItems: 'center' }}>
             <Text style={styles.title}>SpaceBook</Text>
-            <Text style={styles.text}>Requests Screen</Text>
           </View>        
 
-          <View style={{ alignItems: 'center', marginTop: '30vh' }}>
-            <Text style={styles.text}>No Requests</Text>  
+          <View style={{ alignItems: 'center', marginTop: '35vh' }}>
+            <Text style={styles.text}>No requests</Text>
+            <Text>If someone sends you a friend request it'll apear here</Text>           
           </View>          
       
         </View>
@@ -100,7 +100,6 @@ class RequestsScreen extends Component{
           
           <View style={{ alignItems: 'center' }}>
             <Text style={styles.title}>SpaceBook</Text>
-            <Text style={styles.text}>Requests Screen</Text>
           </View>        
   
           <FlatList
@@ -110,15 +109,17 @@ class RequestsScreen extends Component{
                 <Text>{item.first_name} {item.last_name}</Text>
   
                 <View style={{ flexDirection: 'row' }}>
-                  <Button
-                    title='Accept'
-                    onPress={() =>this.handleRequest('POST', item.user_id)}
-                    color="#19a9f7"
-                  />
+                  <View style={{ marginRight: 10 }}>
+                    <Button
+                      title='Accept'
+                      onPress={() =>this.handleRequest('POST', item.user_id)}
+                      color="green"
+                    />
+                  </View>                  
                   <Button
                     title='Reject'
                     onPress={() =>this.handleRequest('DELETE', item.user_id)}
-                    color="#19a9f7"
+                    color="red"
                   />
                 </View>              
               </View>
