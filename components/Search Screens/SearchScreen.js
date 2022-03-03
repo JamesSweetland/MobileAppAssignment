@@ -197,7 +197,7 @@ class SearchScreen extends Component{
             <Button
               title='Cancel'
               onPress={() => this.setState({ results: [] })}
-              color="#19a9f7"
+              color="red"
             />
           </View>
         </View>
