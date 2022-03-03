@@ -7,7 +7,8 @@ class FriendsScreen extends Component{
   state = {
     fName: null, lName: null, email: null, friendCount: null,
     photo: null,
-    posts: []
+    posts: [],
+    friends: true
   }
   
   componentDidMount() {
@@ -102,17 +103,19 @@ class FriendsScreen extends Component{
       }
     })
     .then((response) => {
-      if(response.status === 200){
+      if(response.status === 200){        
         return response.json();
       }else if(response.status === 401){
         this.props.navigation.navigate("Login");
-      }else if(response.status === 403){
+      }else if(response.status === 403){        
         throw 'You must be friends to view posts';
       }else{
         throw 'Something went wrong';
       }
     })
     .then((responseJson) =>{
+      this.setState({ friends: true }) //code got posts so user is friends
+
       responseJson.forEach(post => {
         //converts date and time to a format based on the local settings
         let date = new Date(post.timestamp)
@@ -121,6 +124,9 @@ class FriendsScreen extends Component{
       this.setState({posts: responseJson})
     })
     .catch((error) => {
+      if(error == 'You must be friends to view posts'){
+        this.setState({ friends: false }) //cannot view posts so users not friends
+      }
       console.error(error);
     })
   }
@@ -195,13 +201,23 @@ class FriendsScreen extends Component{
             <Text style={{fontSize: '100%'}}>Friends: {this.state.friendCount}</Text>
           </View>
 
-          <Button
-            title='Add Friend'
-            onPress={() =>this.addFriend()}
-            color="#19a9f7"
-          />     
+          { !this.state.friends &&
+            <View style={styles.button}>
+              <Button
+                title='Add Friend'
+                onPress={() =>this.addFriend()}
+                color="#19a9f7"
+              /> 
+            </View>            
+          }          
 
         </View>
+
+        { !this.state.friends &&
+          <View style={{ alignItems: 'center', marginVertical: '10vh' }}>
+            <Text>You must be friends to view their posts</Text>  
+          </View>            
+        }
 
         <FlatList
           data={this.state.posts}
@@ -246,7 +262,7 @@ class FriendsScreen extends Component{
         </View>       
         
       </View>
-    );
+    );    
   }
 }
 
