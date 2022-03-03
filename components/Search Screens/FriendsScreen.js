@@ -201,6 +201,16 @@ class FriendsScreen extends Component{
             <Text style={{fontSize: '100%'}}>Friends: {this.state.friendCount}</Text>
           </View>
 
+          { this.state.friends &&
+            <View style={styles.button}>
+              <Button
+                title='View Friends'
+                onPress={() =>this.props.navigation.navigate("ViewFriends")}
+                color="#19a9f7"
+              /> 
+            </View> 
+          }
+
           { !this.state.friends &&
             <View style={styles.button}>
               <Button
