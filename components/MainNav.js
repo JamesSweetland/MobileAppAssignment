@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ProfileScreen from './Profile Screens/ProfileNav';
+import ProfileNav from './Profile Screens/ProfileNav';
 import SearchNav from './Search Screens/SearchNav';
 import RequestsScreen from './Profile Screens/RequestsScreen';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -41,7 +41,7 @@ class MainNav extends Component{
       >
         <Tab.Screen 
           name="Home"
-          component={ProfileScreen}
+          component={ProfileNav}
           options={{
             tabBarIcon: ({ color, size, focused }) => (
               <Ionicons name={focused ? "ios-home" : "ios-home-outline"} size={size} color={color} />
