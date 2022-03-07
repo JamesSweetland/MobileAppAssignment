@@ -87,7 +87,7 @@ class SearchScreen extends Component{
   viewProfile = async (userID) => {
     await AsyncStorage.setItem("profileID", userID);
 
-    this.props.navigation.navigate('ProfileScreen')
+    this.props.navigation.navigate('ProfileScreen');
   }    
 
   render(){

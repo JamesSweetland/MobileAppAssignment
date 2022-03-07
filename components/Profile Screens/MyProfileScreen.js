@@ -149,6 +149,12 @@ class ProfileScreen extends Component{
       console.error(error);
     })
   }
+
+  editPost = async (postID) => {
+    await AsyncStorage.setItem("postID", postID);
+
+    this.props.navigation.navigate('EditPost');
+  }
   
   deletePost = async (postID) => {
     //gets the signed in user's ID and authorisation token in async storage
@@ -248,12 +254,21 @@ class ProfileScreen extends Component{
               </View>              
               <Text style={{ margin: 5}}>{item.text}</Text>
               <View style={{justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center'}}>
-                <Text>Likes: {item.numLikes}</Text>                    
-                <Button
-                  title='Delete'
-                  onPress={() =>this.deletePost(item.post_id)}
-                  color="red"
-                />                               
+                <Text>Likes: {item.numLikes}</Text>
+                <View style={{flexDirection: 'row'}}>
+                  <View style={{marginRight: 5}}>
+                    <Button
+                      title='Edit'
+                      onPress={() =>this.editPost(item.post_id)}
+                      color="#19a9f7"
+                    />
+                  </View>                  
+                  <Button
+                    title='Delete'
+                    onPress={() =>this.deletePost(item.post_id)}
+                    color="red"
+                  />
+                </View>                              
               </View>
             </View>
           )}

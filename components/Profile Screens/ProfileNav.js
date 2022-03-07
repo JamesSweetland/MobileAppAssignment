@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import MyProfileScreen from './MyProfileScreen';
+import EditPostScreen from './EditPostScreen';
 import EditProfileScreen from './EditProfileScreen';
 import CameraScreen from './CameraScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -12,6 +13,7 @@ class SearchNav extends Component{
     return(
       <Stack.Navigator initialRouteName="MyProfileScreen" screenOptions={{headerShown: false}}>
         <Stack.Screen name="MyProfileScreen" component={MyProfileScreen} />
+        <Stack.Screen name="EditPost" component={EditPostScreen} />
         <Stack.Screen name="EditProfile" component={EditProfileScreen} />
         <Stack.Screen name="CameraScreen" component={CameraScreen} />
       </Stack.Navigator>      
