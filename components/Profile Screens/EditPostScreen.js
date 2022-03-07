@@ -85,7 +85,7 @@ class EditPostScreen extends Component{
             if(response.status === 200){
                 console.log('Post Updated')
                 this.getPost();
-            }else if(response.status === 401){//if not authorised then redirect to login
+            }else if(response.status === 401 || response.status === 403){//if not authorised or trying to update someone else's post then redirect to login
                 this.props.navigation.navigate("Login");
             }else{
                 throw 'Something went wrong';
