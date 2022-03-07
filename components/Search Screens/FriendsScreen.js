@@ -38,6 +38,8 @@ class ViewFriendsScreen extends Component{
             return response.json()
           }else if(response.status === 401){ //if not authorised then redirect to login
             this.props.navigation.navigate("Login");
+          }else if(response.status === 403 || response.status === 404){
+            this.props.navigation.navigate("SearchResults");
           }else{
             throw 'Something went wrong';
           }

@@ -66,7 +66,7 @@ class LoginScreen extends Component{
       }else if(response.status === 400){ //400 = Bad Request   
         throw 'Invalid email or password';
       }else{
-        throw 'Something went wrong';
+        throw 'Something went wrong';//most likely a server error
       }
     })
     .then(async (responseJson) => {

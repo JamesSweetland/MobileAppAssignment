@@ -66,7 +66,8 @@ class RequestsScreen extends Component{
         this.getRequests();
       }else if(response.status === 401){//if not authorised then redirect to login
         this.props.navigation.navigate("Login");
-      }else if(response.status === 401){
+      }else if(response.status === 404){
+        this.getRequests(); //refreshes requests
         throw 'User Not Found';
       }else{
         throw 'Something went wrong';

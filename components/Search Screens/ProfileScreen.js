@@ -45,6 +45,8 @@ class FriendsScreen extends Component{
         return response.json()
       }else if(response.status === 401){//if not authorised then redirect to login
         this.props.navigation.navigate("Login");
+      }else if(response.status === 404){
+        this.props.navigation.navigate("SearchResults");
       }else{
         throw 'Something went wrong';
       }
@@ -79,7 +81,16 @@ class FriendsScreen extends Component{
       }
     })
     .then((response) => {
-      return response.blob();
+      //checks the response code before returning the json
+      if(response.status === 200){
+        return response.blob();
+      }else if(response.status === 401){//if not authorised then redirect to login
+        this.props.navigation.navigate("Login");
+      }else if(response.status === 404){
+        this.props.navigation.navigate("SearchResults");
+      }else{
+        throw 'Something went wrong';
+      }      
     })
     .then((responseBlob) => {
       let data = URL.createObjectURL(responseBlob);
@@ -109,6 +120,8 @@ class FriendsScreen extends Component{
         this.props.navigation.navigate("Login");
       }else if(response.status === 403){        
         throw 'You must be friends to view posts';
+      }else if(response.status === 404){
+        this.props.navigation.navigate("SearchResults");
       }else{
         throw 'Something went wrong';
       }
@@ -149,6 +162,10 @@ class FriendsScreen extends Component{
         this.getPosts();
       }else if(response.status === 401){
         this.props.navigation.navigate("Login");
+      }else if(response.status === 403){
+        console.log('Post already liked or unliked');
+      }else if(response.status === 404){
+        this.props.navigation.navigate("SearchResults");
       }else{
         throw 'Something went wrong';
       }
@@ -176,6 +193,8 @@ class FriendsScreen extends Component{
         console.log('Friend Request Sent')
       }else if(response.status === 401){ //if not authorised then redirect to login
         this.props.navigation.navigate("Login");
+      }else if(response.status === 403 || response.status === 404){
+        this.props.navigation.navigate("SearchResults");
       }else{
         throw 'Something went wrong';
       }

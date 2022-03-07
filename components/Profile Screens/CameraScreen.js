@@ -36,10 +36,18 @@ class ProfilePic extends Component{
       body: blob
     })
     .then((response) => {
-      console.log("Picture added", response);
+      if(response.status === 200){
+        console.log("Picture added", response);
+      }
+      else if(response.status === 401){
+        this.props.navigation.navigate("Login");
+      }
+      else{
+        throw 'Something went wrong';
+      }
     })
-    .catch((err) => {
-      console.log(err);
+    .catch((error) => {
+      console.log(error);
     })
   }
 

@@ -74,7 +74,13 @@ class ProfileScreen extends Component{
       }
     })
     .then((response) => {
-      return response.blob();
+      if(response.status === 200){
+        return response.blob();
+      }else if(response.status === 401){//if not authorised then redirect to login
+        this.props.navigation.navigate("Login");
+      }else{
+        throw 'Something went wrong';
+      }      
     })
     .then((responseBlob) => {
       let data = URL.createObjectURL(responseBlob);

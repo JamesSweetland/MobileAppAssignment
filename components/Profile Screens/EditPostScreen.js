@@ -14,13 +14,13 @@ class EditPostScreen extends Component{
     componentDidMount() {
         //refreshes data if this page is focused
         this.unsubscribe = this.props.navigation.addListener('focus', () => {
-          this.getPost();      
+            this.getPost();      
         });    
-      }
+    }
     
-      componentWillUnmount() {
+    componentWillUnmount() {
         this.unsubscribe();
-      }
+    }
 
     getPost = async () => {
         //gets the signed in user's ID and authorisation token in async storage
@@ -53,7 +53,6 @@ class EditPostScreen extends Component{
                 post: responseJson,
                 timestamp: date
             })
-            console.log(this.state.post)
         })
         .catch((error) => {
             console.error(error);
@@ -96,51 +95,51 @@ class EditPostScreen extends Component{
         })
     }
 
-  render(){
-    return(
-      <View style={styles.container}>
+    render(){
+        return(
+            <View style={styles.container}>
 
-        <View style={{ alignItems: 'center' }}>
-          <Text style={styles.title}>SpaceBook</Text>
-          <Text style={styles.text}>Edit Post</Text>
-        </View>
+                <View style={{ alignItems: 'center' }}>
+                    <Text style={styles.title}>SpaceBook</Text>
+                    <Text style={styles.text}>Edit Post</Text>
+                </View>
 
-        <View style={ styles.post }>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text style={{ fontWeight: 'bold' }}>{this.state.author.first_name} {this.state.author.last_name}</Text>
-                <Text>{this.state.timestamp}</Text>
-            </View>
+                <View style={ styles.post }>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <Text style={{ fontWeight: 'bold' }}>{this.state.author.first_name} {this.state.author.last_name}</Text>
+                        <Text>{this.state.timestamp}</Text>
+                    </View>
 
-            <Text style={{ margin: 5}}>{this.state.post.text}</Text>            
-            <Text>Likes: {this.state.post.numLikes}</Text>                                                      
-        </View>
+                    <Text style={{ margin: 5}}>{this.state.post.text}</Text>            
+                    <Text>Likes: {this.state.post.numLikes}</Text>                                                      
+                </View>
 
-        <View style={styles.postContainer}>
-          <TextInput
-            ref={input => { this.textInput = input }}
-            style={styles.input}
-            onChangeText={value => this.setState({updatedText: value})}
-            placeholder="Edit post"
-          />
-          <View style={{marginHorizontal: 10, marginBottom: 10}}>
-            <Button
-              title='Update'
-              onPress={() => {this.updatePost()} }
-              color="#19a9f7"
-            />
-          </View>          
-        </View> 
+                <View style={styles.postContainer}>
+                    <TextInput
+                        ref={input => { this.textInput = input }}
+                        style={styles.input}
+                        onChangeText={value => this.setState({updatedText: value})}
+                        placeholder="Edit post"
+                    />
+                    <View style={{marginHorizontal: 10, marginBottom: 10}}>
+                        <Button
+                        title='Update'
+                        onPress={() => {this.updatePost()} }
+                        color="#19a9f7"
+                        />
+                    </View>          
+                </View> 
 
-        <View style={styles.button}>
-          <Button
-            title='Back'
-            onPress={() =>this.props.navigation.goBack()}
-            color="#19a9f7"
-          />
-        </View>  
-      </View> 
-    );
-  }
+                <View style={styles.button}>
+                    <Button
+                        title='Back'
+                        onPress={() =>this.props.navigation.goBack()}
+                        color="#19a9f7"
+                    />
+                </View>
+            </View> 
+        );
+    }
 }
 
 const styles = StyleSheet.create({

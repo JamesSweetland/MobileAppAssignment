@@ -117,14 +117,25 @@ class EditProfileScreen extends Component{
       //checks the response code before returning the json
       if(response.status === 200){
         console.log('Details Updated')
-      }else if(response.status === 401){//if not authorised then redirect to login
+      }else if(response.status === 400){      
+        throw 'Failed Validation';
+      }else if(response.status === 401 || response.status === 403){//if not authorised then redirect to login
         this.props.navigation.navigate("Login");
       }else{
         throw 'Something went wrong';
       }
     })
     .catch((error) => {
-      console.error(error);
+      let errors = [ "", "", "", ""];
+      if(error == 'Failed Validation'){
+        errors[3] = "Your Details are not valid";
+      }
+      else{
+        errors[3] = error + ", please try again";
+      }
+      //displays error message to user and in debug console
+      this.setState({ errorMsg: errors });
+      console.error(error); 
     })
   }
 
