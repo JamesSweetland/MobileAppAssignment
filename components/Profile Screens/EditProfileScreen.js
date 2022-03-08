@@ -148,82 +148,85 @@ class EditProfileScreen extends Component{
           <Text style={styles.text}>Edit Profile</Text>
         </View>            
 
-        <View style={styles.button}>
-          <Button
-            title='Change Profile Picture'
-            onPress={() =>this.props.navigation.navigate("CameraScreen")}
-            color="#19a9f7"
+        <View style={{ alignItems: 'center' }}>
+          <View style={styles.button}>
+            <Button
+              title='Change Profile Picture'
+              onPress={() =>this.props.navigation.navigate("CameraScreen")}
+              color="#19a9f7"
+            />
+          </View>
+
+          <Text>First Name</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={value => this.setState({newFName: value})}
+            placeholder={this.state.fName}
           />
+          { //the display box for the first name field error message
+            (this.state.errorMsg[0] != "") /* Only displays if there is a message to be displayed */ &&
+            <Text style={{color:"white", backgroundColor:"red", padding:5, borderRadius: 3}}>
+              {this.state.errorMsg[0]}
+            </Text>
+          }               
+
+          <Text>Last Name</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={value => this.setState({newLName: value})}
+            placeholder={this.state.lName}
+          />
+          { //the display box for the last name field error message
+            (this.state.errorMsg[1] != "") /* Only displays if there is a message to be displayed */ &&
+            <Text style={{color:"white", backgroundColor:"red", padding:5, borderRadius: 3}}>
+              {this.state.errorMsg[1]}
+            </Text>
+          }
+          
+          <Text>Email</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={value => this.setState({newEmail: value})}
+            placeholder={this.state.email}
+          />
+          { //the display box for the email field error message
+            (this.state.errorMsg[2] != "") /* Only displays if there is a message to be displayed */ &&
+            <Text style={{color:"white", backgroundColor:"red", padding:5, borderRadius: 3}}>
+              {this.state.errorMsg[2]}
+            </Text>
+          }  
+
+          <Text>Password</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={value => this.setState({password: value})}
+            placeholder="Password"
+            secureTextEntry={true}
+          />
+          { //the display box for the password field error message
+            (this.state.errorMsg[3] != "") /* Only displays if there is a message to be displayed */ &&
+            <Text style={{color:"white", backgroundColor:"red", padding:5, borderRadius: 3}}>
+              {this.state.errorMsg[3]}
+            </Text>
+          }
+          
+          <View>
+            <View style={styles.button}>
+              <Button
+                title='Update'
+                onPress={() =>this.updateDetails()}
+                color="#19a9f7"
+              />
+            </View>
+            <View style={styles.button}>
+              <Button
+                title='Back'
+                onPress={() =>this.props.navigation.goBack()}
+                color="#19a9f7"
+              />
+            </View> 
+          </View>                   
         </View>
-
-        <Text>First Name</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={value => this.setState({newFName: value})}
-          placeholder={this.state.fName}
-        />
-        { //the display box for the first name field error message
-          (this.state.errorMsg[0] != "") /* Only displays if there is a message to be displayed */ &&
-          <Text style={{color:"white", backgroundColor:"red", padding:5, borderRadius: 3}}>
-            {this.state.errorMsg[0]}
-          </Text>
-        }               
-
-        <Text>Last Name</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={value => this.setState({newLName: value})}
-          placeholder={this.state.lName}
-        />
-        { //the display box for the last name field error message
-          (this.state.errorMsg[1] != "") /* Only displays if there is a message to be displayed */ &&
-          <Text style={{color:"white", backgroundColor:"red", padding:5, borderRadius: 3}}>
-            {this.state.errorMsg[1]}
-          </Text>
-        }
-        
-        <Text>Email</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={value => this.setState({newEmail: value})}
-          placeholder={this.state.email}
-        />
-        { //the display box for the email field error message
-          (this.state.errorMsg[2] != "") /* Only displays if there is a message to be displayed */ &&
-          <Text style={{color:"white", backgroundColor:"red", padding:5, borderRadius: 3}}>
-            {this.state.errorMsg[2]}
-          </Text>
-        }  
-
-        <Text>Password</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={value => this.setState({password: value})}
-          placeholder="Password"
-          secureTextEntry={true}
-        />
-        { //the display box for the password field error message
-          (this.state.errorMsg[3] != "") /* Only displays if there is a message to be displayed */ &&
-          <Text style={{color:"white", backgroundColor:"red", padding:5, borderRadius: 3}}>
-            {this.state.errorMsg[3]}
-          </Text>
-        } 
-
-        <View style={styles.button}>
-          <Button
-            title='Update'
-            onPress={() =>this.updateDetails()}
-            color="#19a9f7"
-          />
-        </View>                
-
-        <View style={styles.button}>
-          <Button
-            title='Back'
-            onPress={() =>this.props.navigation.goBack()}
-            color="#19a9f7"
-          />
-        </View>  
       </View> 
     );
   }
@@ -236,18 +239,16 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   title: {
-    alignItems: 'center',    
     color: '#19a9f7',
     fontWeight: 'bold',
     fontSize: 'min(16vw, 500%)'//css sets title to 16% of the viewpoint width but never more than the font size 500%
   },
   text: {
     padding: 5,
-    fontSize: '120%',
+    fontSize: '120%'
   },
   button: {
-    margin: 10,
-    alignItems: 'center'
+    margin: 10
   },
   input: {
     height: 40,

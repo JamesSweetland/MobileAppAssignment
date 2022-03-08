@@ -239,6 +239,7 @@ class ProfileScreen extends Component{
             ref={input => { this.textInput = input }}
             style={styles.input}
             onChangeText={value => this.setState({postText: value})}
+            multiline={true}            
             placeholder="What's on your mind?"
           />
           <View style={{marginHorizontal: 10, marginBottom: 10}}>

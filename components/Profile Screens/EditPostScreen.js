@@ -104,39 +104,47 @@ class EditPostScreen extends Component{
                     <Text style={styles.text}>Edit Post</Text>
                 </View>
 
-                <View style={ styles.post }>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <Text style={{ fontWeight: 'bold' }}>{this.state.author.first_name} {this.state.author.last_name}</Text>
-                        <Text>{this.state.timestamp}</Text>
-                    </View>
+                <View style={{ flex: 0.7, justifyContent: 'center' }}>
+                    <View style={ styles.post }>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <Text style={{ fontWeight: 'bold' }}>{this.state.author.first_name} {this.state.author.last_name}</Text>
+                            <Text>{this.state.timestamp}</Text>
+                        </View>
 
-                    <Text style={{ margin: 5}}>{this.state.post.text}</Text>            
-                    <Text>Likes: {this.state.post.numLikes}</Text>                                                      
-                </View>
-
-                <View style={styles.postContainer}>
-                    <TextInput
-                        ref={input => { this.textInput = input }}
-                        style={styles.input}
-                        onChangeText={value => this.setState({updatedText: value})}
-                        placeholder="Edit post"
-                    />
-                    <View style={{marginHorizontal: 10, marginBottom: 10}}>
-                        <Button
-                        title='Update'
-                        onPress={() => {this.updatePost()} }
-                        color="#19a9f7"
+                        {/*<Text style={{ margin: 5}}>{this.state.post.text}</Text>*/}
+                        <TextInput
+                            style={styles.input}
+                            onChangeText={value => this.setState({updatedText: value})}
+                            placeholder="Edit post"
+                            multiline={true}
+                            numberOfLines={4}
+                            defaultValue={this.state.post.text}                            
                         />
-                    </View>          
-                </View> 
 
-                <View style={styles.button}>
-                    <Button
-                        title='Back'
-                        onPress={() =>this.props.navigation.goBack()}
-                        color="#19a9f7"
-                    />
+                        <Text>Likes: {this.state.post.numLikes}</Text>                                                      
+                    </View>                    
+
+                    <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                        <View style={styles.button}>
+                            <Button
+                                title='Update'
+                                onPress={() => {this.updatePost()} }
+                                color="#19a9f7"
+                            />
+                        </View>   
+
+                        <View style={styles.button}>
+                            <Button
+                                title='Back'
+                                onPress={() =>this.props.navigation.goBack()}
+                                color="#19a9f7"
+                            />
+                        </View>
+                    </View>
+                    
                 </View>
+                
+                
             </View> 
         );
     }
@@ -157,13 +165,12 @@ const styles = StyleSheet.create({
         fontSize: '120%',
     },
     button: {
-        margin: 10,
-        alignItems: 'center'
+        margin: 10        
     },
     input: {
-        height: 40,
         margin: 12,
-        padding: 10,    
+        borderWidth: 1,
+        padding: 10,
         borderRadius: 3
     },
     post: {
@@ -172,11 +179,6 @@ const styles = StyleSheet.create({
         margin: 5,
         padding: 5
     },
-    postContainer: {
-        margin: 5,
-        backgroundColor: '#FFFFFF',
-        borderRadius: 3
-    }
 });
 
 export default EditPostScreen;

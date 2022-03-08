@@ -27,10 +27,7 @@ class FriendsScreen extends Component{
     let id = await AsyncStorage.getItem('profileID');
     let sessionToken = await AsyncStorage.getItem('token');
 
-    this.setState({
-      userID: id,
-      token: sessionToken
-    })
+    this.setState({posts: []})
 
     //gets signed in user's data
     return fetch("http://localhost:3333/api/1.0.0/user/" + id, {

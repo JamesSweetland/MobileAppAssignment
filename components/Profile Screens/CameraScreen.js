@@ -73,7 +73,7 @@ class ProfilePic extends Component{
           >
             <View style={styles.buttonContainer}>
               <TouchableOpacity
-                style={styles.button}
+                style={styles.cameraButton}
                 onPress={() => {
                   this.takePicture();
                 }}>
@@ -119,17 +119,23 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: 'transparent',
     flexDirection: 'row',
     margin: 20,
   },
-  button: {
+  cameraButton: {
     flex: 0.1,
-    alignSelf: 'flex-end',
     alignItems: 'center',
+    alignSelf: 'flex-end'    
+  },
+  button: {
+    alignItems: 'center',
+    margin: 10
   },
   text: {
-    fontSize: 18,
+    fontSize: 15,
     color: 'white',
   }
 });
