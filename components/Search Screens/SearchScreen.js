@@ -26,7 +26,6 @@ class SearchScreen extends Component {
     let id = await AsyncStorage.getItem('userID')
     let sessionToken = await AsyncStorage.getItem('token');
 
-
     //sends a search request to the server
     return fetch("http://localhost:3333/api/1.0.0/user/" + id + "/friends", {
       method: 'GET',

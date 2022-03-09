@@ -226,6 +226,7 @@ class EditProfileScreen extends Component {
               />
             </View>
           </View>
+          
         </View>
       </View>
     );
