@@ -52,7 +52,7 @@ class ProfileScreen extends Component {
             email: responseJson.email,
             friendCount: responseJson.friend_count
           })
-          this.getProfileImage(); //gets profile pic
+          this.getProfileImage(); //gets profile pic if getData was successfull
           this.getPosts(); //gets users posts     
         }
       })
@@ -67,7 +67,7 @@ class ProfileScreen extends Component {
     let sessionToken = await AsyncStorage.getItem('token');
 
     //sends a get request to the server to get the signed in user's photo
-    fetch("http://localhost:3333/api/1.0.0/user/" + id /*1*/ + "/photo", {
+    fetch("http://localhost:3333/api/1.0.0/user/" + id + "/photo", {
       method: 'GET',
       headers: {
         'X-Authorization': sessionToken
@@ -158,7 +158,6 @@ class ProfileScreen extends Component {
 
   editPost = async (postID) => {
     await AsyncStorage.setItem("postID", postID);
-
     this.props.navigation.navigate('EditPost');
   }
 
@@ -204,6 +203,8 @@ class ProfileScreen extends Component {
           //removes the logged in user's ID and authorisation token from async storage
           await AsyncStorage.removeItem("userID");
           await AsyncStorage.removeItem("token");
+          await AsyncStorage.removeItem("postID");
+          await AsyncStorage.removeItem("profileID");
 
           this.props.navigation.navigate("Login");//navigates to the login
         }
