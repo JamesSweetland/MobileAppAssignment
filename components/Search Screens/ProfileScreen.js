@@ -27,7 +27,7 @@ class FriendsScreen extends Component {
     let id = await AsyncStorage.getItem('profileID');
     let sessionToken = await AsyncStorage.getItem('token');
 
-    this.setState({ posts: [] })
+    this.setState({ posts: [] }) //resets posts to avoid old posts showing when navigating between a friends profile and a profile which is not a friend
 
     //gets signed in user's data
     return fetch("http://localhost:3333/api/1.0.0/user/" + id, {
@@ -71,7 +71,7 @@ class FriendsScreen extends Component {
     let sessionToken = await AsyncStorage.getItem('token');
 
     //sends a get request to the server to get the signed in user's photo
-    fetch("http://localhost:3333/api/1.0.0/user/" + id /*1*/ + "/photo", {
+    fetch("http://localhost:3333/api/1.0.0/user/" + id + "/photo", {
       method: 'GET',
       headers: {
         'X-Authorization': sessionToken
@@ -101,7 +101,7 @@ class FriendsScreen extends Component {
   getPosts = async () => {
     //gets authorisation token and selected user profile id in async storage
     let id = await AsyncStorage.getItem('profileID');
-    let sessionToken = await AsyncStorage.getItem('token');
+    let sessionToken = await AsyncStorage.getItem('token');    
 
     //sends a get request to the server to get the signed in user's posts
     fetch("http://localhost:3333/api/1.0.0/user/" + id + "/post", {
@@ -124,13 +124,14 @@ class FriendsScreen extends Component {
         }
       })
       .then((responseJson) => {
-        this.setState({ friends: true }) //code got posts so user is friends
+        this.setState({ friends: true }) //successfully got posts so user is a friend
 
         responseJson.forEach(post => {
           //converts date and time to a format based on the local settings
           let date = new Date(post.timestamp)
           post.timestamp = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + " " + date.toLocaleDateString();
         });
+
         this.setState({ posts: responseJson })
       })
       .catch((error) => {
@@ -157,10 +158,10 @@ class FriendsScreen extends Component {
         if (response.status === 200) {
           console.log(methodType + ' Like');
           this.getPosts();
+        } else if (response.status === 400) {
+          console.log('Post already liked or unliked');
         } else if (response.status === 401) {
           this.props.navigation.navigate("Login");
-        } else if (response.status === 403) {
-          console.log('Post already liked or unliked');
         } else if (response.status === 404) {
           this.props.navigation.navigate("SearchResults");
         } else {
@@ -282,7 +283,7 @@ class FriendsScreen extends Component {
         <View style={styles.button}>
           <Button
             title='Back'
-            onPress={() => this.props.navigation.goBack()}
+            onPress={() => this.props.navigation.navigate("SearchResults")}
             color="#19a9f7"
           />
         </View>
