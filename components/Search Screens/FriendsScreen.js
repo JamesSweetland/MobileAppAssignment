@@ -12,7 +12,7 @@ class ViewFriendsScreen extends Component {
   componentDidMount() {
     //refreshes data if this page is focused
     this.unsubscribe = this.props.navigation.addListener('focus', () => {
-      this.getData();
+      this.getName();
     });
   }
 
@@ -20,7 +20,7 @@ class ViewFriendsScreen extends Component {
     this.unsubscribe();
   }
 
-  getData = async () => {
+  getName = async () => {
     //gets authorisation token and selected user profile id in async storage
     let id = await AsyncStorage.getItem('profileID');
     let sessionToken = await AsyncStorage.getItem('token');
