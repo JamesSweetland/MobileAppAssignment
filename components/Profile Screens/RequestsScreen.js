@@ -5,8 +5,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 class RequestsScreen extends Component {
 
   state = {
-    userID: null,
-    token: null,
     requests: []
   }
 
@@ -147,7 +145,7 @@ const styles = StyleSheet.create({
   },
   text: {
     padding: 5,
-    fontSize: '120%',
+    fontSize: '120%'
   },
   requestsContainer: {
     flexDirection: 'row',
