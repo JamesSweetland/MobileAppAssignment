@@ -3,9 +3,9 @@ import { StyleSheet, Text, View, Button, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Camera } from 'expo-camera';
 
-class ProfilePic extends Component{
-    
-  constructor(props){
+class ProfilePic extends Component {
+
+  constructor(props) {
     super(props);
 
     this.state = {
@@ -14,9 +14,9 @@ class ProfilePic extends Component{
     }
   }
 
-  async componentDidMount(){
+  async componentDidMount() {
     const { status } = await Camera.requestCameraPermissionsAsync();
-    this.setState({hasPermission: status === 'granted'});
+    this.setState({ hasPermission: status === 'granted' });
   }
 
   sendToServer = async (data) => {
@@ -35,39 +35,39 @@ class ProfilePic extends Component{
       },
       body: blob
     })
-    .then((response) => {
-      if(response.status === 200){
-        console.log("Picture added", response);
-      }
-      else if(response.status === 401){
-        this.props.navigation.navigate("Login");
-      }
-      else{
-        throw 'Something went wrong';
-      }
-    })
-    .catch((error) => {
-      console.log(error);
-    })
+      .then((response) => {
+        if (response.status === 200) {
+          console.log("Picture added", response);
+        }
+        else if (response.status === 401) {
+          this.props.navigation.navigate("Login");
+        }
+        else {
+          throw 'Something went wrong';
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      })
   }
 
   takePicture = async () => {
-    if(this.camera){
+    if (this.camera) {
       const options = {
-          quality: 0.5,
-          base64: true,
-          onPictureSaved: (data) => this.sendToServer(data)
+        quality: 0.5,
+        base64: true,
+        onPictureSaved: (data) => this.sendToServer(data)
       };
-      await this.camera.takePictureAsync(options); 
+      await this.camera.takePictureAsync(options);
     }
   }
 
-  render(){
-    if(this.state.hasPermission){
-      return(
+  render() {
+    if (this.state.hasPermission) {
+      return (
         <View style={styles.container}>
-          <Camera 
-            style={styles.camera} 
+          <Camera
+            style={styles.camera}
             type={this.state.type}
             ref={ref => this.camera = ref}
           >
@@ -85,24 +85,24 @@ class ProfilePic extends Component{
           <View style={styles.button}>
             <Button
               title='Back'
-              onPress={() =>this.props.navigation.goBack()}
+              onPress={() => this.props.navigation.goBack()}
               color="#19a9f7"
             />
-          </View>  
+          </View>
         </View>
       );
-    }else{
-      return(
+    } else {
+      return (
         <View>
           <Text>No access to camera</Text>
           <View style={styles.button}>
             <Button
               title='Back'
-              onPress={() =>this.props.navigation.goBack()}
+              onPress={() => this.props.navigation.goBack()}
               color="#19a9f7"
             />
-          </View>  
-        </View>        
+          </View>
+        </View>
       );
     }
   }
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   cameraButton: {
     flex: 0.1,
     alignItems: 'center',
-    alignSelf: 'flex-end'    
+    alignSelf: 'flex-end'
   },
   button: {
     alignItems: 'center',

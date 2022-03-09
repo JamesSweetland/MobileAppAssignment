@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-class EditPostScreen extends Component{
+class EditPostScreen extends Component {
 
     state = {
         author: {},
@@ -14,10 +14,10 @@ class EditPostScreen extends Component{
     componentDidMount() {
         //refreshes data if this page is focused
         this.unsubscribe = this.props.navigation.addListener('focus', () => {
-            this.getPost();      
-        });    
+            this.getPost();
+        });
     }
-    
+
     componentWillUnmount() {
         this.unsubscribe();
     }
@@ -35,28 +35,28 @@ class EditPostScreen extends Component{
                 'X-Authorization': sessionToken
             }
         })
-        .then((response) => {
-            if(response.status === 200){
-                return response.json();
-            }else if(response.status === 401){
-                this.props.navigation.navigate("Login");
-            }else{
-                throw 'Something went wrong';
-            }
-        })
-        .then((responseJson) =>{
-            //converts date and time to a format based on the local settings
-            let date = new Date(responseJson.timestamp)
-            date = date.toLocaleTimeString( [], {hour: '2-digit', minute:'2-digit'} ) + " " + date.toLocaleDateString(); 
-            this.setState({
-                author: responseJson.author,
-                post: responseJson,
-                timestamp: date
+            .then((response) => {
+                if (response.status === 200) {
+                    return response.json();
+                } else if (response.status === 401) {
+                    this.props.navigation.navigate("Login");
+                } else {
+                    throw 'Something went wrong';
+                }
             })
-        })
-        .catch((error) => {
-            console.error(error);
-        })
+            .then((responseJson) => {
+                //converts date and time to a format based on the local settings
+                let date = new Date(responseJson.timestamp)
+                date = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + " " + date.toLocaleDateString();
+                this.setState({
+                    author: responseJson.author,
+                    post: responseJson,
+                    timestamp: date
+                })
+            })
+            .catch((error) => {
+                console.error(error);
+            })
     }
 
     updatePost = async () => {
@@ -79,24 +79,24 @@ class EditPostScreen extends Component{
                 "numLikes": this.state.post.numLikes
             })
         })
-        .then((response) => {
-            //checks the response code before returning the json
-            if(response.status === 200){
-                console.log('Post Updated')
-                this.getPost();
-            }else if(response.status === 401 || response.status === 403){//if not authorised or trying to update someone else's post then redirect to login
-                this.props.navigation.navigate("Login");
-            }else{
-                throw 'Something went wrong';
-            }
-        })
-        .catch((error) => {
-            console.error(error);
-        })
+            .then((response) => {
+                //checks the response code before returning the json
+                if (response.status === 200) {
+                    console.log('Post Updated')
+                    this.getPost();
+                } else if (response.status === 401 || response.status === 403) {//if not authorised or trying to update someone else's post then redirect to login
+                    this.props.navigation.navigate("Login");
+                } else {
+                    throw 'Something went wrong';
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+            })
     }
 
-    render(){
-        return(
+    render() {
+        return (
             <View style={styles.container}>
 
                 <View style={{ alignItems: 'center' }}>
@@ -105,7 +105,7 @@ class EditPostScreen extends Component{
                 </View>
 
                 <View style={{ flex: 0.7, justifyContent: 'center' }}>
-                    <View style={ styles.post }>
+                    <View style={styles.post}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                             <Text style={{ fontWeight: 'bold' }}>{this.state.author.first_name} {this.state.author.last_name}</Text>
                             <Text>{this.state.timestamp}</Text>
@@ -114,38 +114,38 @@ class EditPostScreen extends Component{
                         {/*<Text style={{ margin: 5}}>{this.state.post.text}</Text>*/}
                         <TextInput
                             style={styles.input}
-                            onChangeText={value => this.setState({updatedText: value})}
+                            onChangeText={value => this.setState({ updatedText: value })}
                             placeholder="Edit post"
                             multiline={true}
                             numberOfLines={4}
-                            defaultValue={this.state.post.text}                            
+                            defaultValue={this.state.post.text}
                         />
 
-                        <Text>Likes: {this.state.post.numLikes}</Text>                                                      
-                    </View>                    
+                        <Text>Likes: {this.state.post.numLikes}</Text>
+                    </View>
 
                     <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
                         <View style={styles.button}>
                             <Button
                                 title='Update'
-                                onPress={() => {this.updatePost()} }
+                                onPress={() => { this.updatePost() }}
                                 color="#19a9f7"
                             />
-                        </View>   
+                        </View>
 
                         <View style={styles.button}>
                             <Button
                                 title='Back'
-                                onPress={() =>this.props.navigation.goBack()}
+                                onPress={() => this.props.navigation.goBack()}
                                 color="#19a9f7"
                             />
                         </View>
                     </View>
-                    
+
                 </View>
-                
-                
-            </View> 
+
+
+            </View>
         );
     }
 }
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
         fontFamily: "Helvetica",
         flex: 1
     },
-    title: {    
+    title: {
         color: '#19a9f7',
         fontWeight: 'bold',
         fontSize: 'min(16vw, 500%)'//css sets title to 16% of the viewpoint width but never more than the font size 500%
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
         fontSize: '120%',
     },
     button: {
-        margin: 10        
+        margin: 10
     },
     input: {
         margin: 12,

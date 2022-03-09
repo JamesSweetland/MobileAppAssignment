@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 const Tab = createBottomTabNavigator();
 
-class MainNav extends Component{
+class MainNav extends Component {
 
   componentDidMount() {
     //checks user is logged in when page is first loaded and if this page is focused
@@ -30,16 +30,16 @@ class MainNav extends Component{
     }
   }
 
-  render(){
-    return(
-      <Tab.Navigator 
-        initialRouteName="Home" 
+  render() {
+    return (
+      <Tab.Navigator
+        initialRouteName="Home"
         screenOptions={{
           headerShown: false,
           "tabBarActiveTintColor": "#19a9f7"
         }}
       >
-        <Tab.Screen 
+        <Tab.Screen
           name="Home"
           component={ProfileNav}
           options={{
@@ -47,26 +47,26 @@ class MainNav extends Component{
               <Ionicons name={focused ? "ios-home" : "ios-home-outline"} size={size} color={color} />
             )
           }}
-        /> 
-        <Tab.Screen 
-          name="Search" 
+        />
+        <Tab.Screen
+          name="Search"
           component={SearchNav}
           options={{
             tabBarIcon: ({ color, size, focused }) => (
               <Ionicons name={focused ? "ios-search" : "ios-search-outline"} color={color} size={size} />
             )
           }}
-        />        
-        <Tab.Screen 
-          name="Requests" 
+        />
+        <Tab.Screen
+          name="Requests"
           component={RequestsScreen}
           options={{
             tabBarIcon: ({ color, size, focused }) => (
               <Ionicons name={focused ? "ios-chatbubbles" : "ios-chatbubbles-outline"} size={size} color={color} />
             )
           }}
-        />     
-      </Tab.Navigator>       
+        />
+      </Tab.Navigator>
     );
   }
 }

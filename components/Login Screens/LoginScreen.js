@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View ,Button, TextInput} from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-class LoginScreen extends Component{
+class LoginScreen extends Component {
 
   state = {
-    errorMsg: [ "", "" ], //an array of the messages that are displayed if the input is invalid
+    errorMsg: ["", ""], //an array of the messages that are displayed if the input is invalid
     email: null,
     password: null
   }
 
   validate = () => {
-    let errors = [ "", "" ]; //an array to hold the error messages
-    
+    let errors = ["", ""]; //an array to hold the error messages
+
     //loads fields into an array
     let fields = [
       this.state.email,
@@ -20,13 +20,13 @@ class LoginScreen extends Component{
     ];
 
     //uses regex to check email is a valid format
-    if(!/^\S+@\S+\.\S+$/.test(fields[0])){
+    if (!/^\S+@\S+\.\S+$/.test(fields[0])) {
       errors[0] = "The email supplied is not a valid format";
     }
 
     //checks each field is not empty
-    for(let i = 0; i < fields.length; i++){
-      if(fields[i] == null || fields[i] == ""){
+    for (let i = 0; i < fields.length; i++) {
+      if (fields[i] == null || fields[i] == "") {
         errors[i] = "All fields must be filled in";
       }
     }
@@ -34,8 +34,8 @@ class LoginScreen extends Component{
     this.setState({ errorMsg: errors });
 
     //throws error if any field is invalid
-    for(let i = 0; i < errors.length; i++){
-      if(errors[i] != ""){
+    for (let i = 0; i < errors.length; i++) {
+      if (errors[i] != "") {
         throw errors[i];
       }
     }
@@ -59,88 +59,88 @@ class LoginScreen extends Component{
         "password": this.state.password
       })
     })
-    .then((response) => {
-      //checks the response code before returning the json
-      if(response.status === 200){ //200 = ok
-        return response.json()
-      }else if(response.status === 400){ //400 = Bad Request   
-        throw 'Invalid email or password';
-      }else{
-        throw 'Something went wrong';//most likely a server error
-      }
-    })
-    .then(async (responseJson) => {
+      .then((response) => {
+        //checks the response code before returning the json
+        if (response.status === 200) { //200 = ok
+          return response.json()
+        } else if (response.status === 400) { //400 = Bad Request   
+          throw 'Invalid email or password';
+        } else {
+          throw 'Something went wrong';//most likely a server error
+        }
+      })
+      .then(async (responseJson) => {
 
-      //sets the signed in user's ID and authorisation token in async storage
-      await AsyncStorage.setItem("userID", JSON.stringify(responseJson.id));
-      await AsyncStorage.setItem("token", JSON.stringify(responseJson.token).replaceAll('"', ''));//removes speakmarks from token
-        
-      this.props.navigation.navigate("Home");//navigates to the home page
-    })
-    .catch((error) => {
-      let errors = [ "", "" ];
-      if(error == 'Invalid email or password'){
-        errors[1] = error;
-      }
-      else{
-        errors[1] = error + ", please try again";
-      }
-      //displays error message to user and in debug console
-      this.setState({ errorMsg: errors });
-      console.error(error);      
-    })   
+        //sets the signed in user's ID and authorisation token in async storage
+        await AsyncStorage.setItem("userID", JSON.stringify(responseJson.id));
+        await AsyncStorage.setItem("token", JSON.stringify(responseJson.token).replaceAll('"', ''));//removes speakmarks from token
+
+        this.props.navigation.navigate("Home");//navigates to the home page
+      })
+      .catch((error) => {
+        let errors = ["", ""];
+        if (error == 'Invalid email or password') {
+          errors[1] = error;
+        }
+        else {
+          errors[1] = error + ", please try again";
+        }
+        //displays error message to user and in debug console
+        this.setState({ errorMsg: errors });
+        console.error(error);
+      })
   }
 
-  render(){
-    return(
-        <View style={styles.container}>
+  render() {
+    return (
+      <View style={styles.container}>
 
-          <Text style={styles.title}>SpaceBook</Text>
-          <Text style={styles.text}>Login</Text>
+        <Text style={styles.title}>SpaceBook</Text>
+        <Text style={styles.text}>Login</Text>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            onChangeText={value => this.setState({email: value})}
-          />
-          { //the display box for the email field error message
-            this.state.errorMsg[0] != "" /* Only displays if there is a message to be displayed */ &&
-            <Text style={{color:"white", backgroundColor:"red", padding:5, borderRadius: 3}}>
-              {this.state.errorMsg[0]}
-            </Text>
-          }
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          onChangeText={value => this.setState({ email: value })}
+        />
+        { //the display box for the email field error message
+          this.state.errorMsg[0] != "" /* Only displays if there is a message to be displayed */ &&
+          <Text style={{ color: "white", backgroundColor: "red", padding: 5, borderRadius: 3 }}>
+            {this.state.errorMsg[0]}
+          </Text>
+        }
 
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            onChangeText={value => this.setState({password: value})}
-            secureTextEntry={true}
-          />
-          { //the display box for the password field error message
-            this.state.errorMsg[1] != "" /* Only displays if there is a message to be displayed */ &&
-            <Text style={{color:"white", backgroundColor:"red", padding:5, borderRadius: 3}}>
-              {this.state.errorMsg[1]}
-            </Text>
-          }
-          
-          <View>
-            <View style={styles.button}>
-              <Button
-                title='Login'
-                onPress={() =>this.login()}
-                color="#19a9f7"
-              />
-            </View>
-            <View style={styles.button}>
-              <Button
-                title='Create Account'
-                onPress={() =>this.props.navigation.navigate('Signup')}
-                color="#19a9f7"
-              />
-            </View>                                    
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          onChangeText={value => this.setState({ password: value })}
+          secureTextEntry={true}
+        />
+        { //the display box for the password field error message
+          this.state.errorMsg[1] != "" /* Only displays if there is a message to be displayed */ &&
+          <Text style={{ color: "white", backgroundColor: "red", padding: 5, borderRadius: 3 }}>
+            {this.state.errorMsg[1]}
+          </Text>
+        }
+
+        <View>
+          <View style={styles.button}>
+            <Button
+              title='Login'
+              onPress={() => this.login()}
+              color="#19a9f7"
+            />
           </View>
-
+          <View style={styles.button}>
+            <Button
+              title='Create Account'
+              onPress={() => this.props.navigation.navigate('Signup')}
+              color="#19a9f7"
+            />
+          </View>
         </View>
+
+      </View>
     );
   }
 }
