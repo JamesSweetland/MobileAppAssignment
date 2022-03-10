@@ -23,7 +23,7 @@ class ProfileScreen extends Component {
     this.unsubscribe();
   }
 
-  getData = async () => { 
+  getData = async () => {
     //gets the signed in user's ID and authorisation token in async storage
     let id = await AsyncStorage.getItem('userID');
     let sessionToken = await AsyncStorage.getItem('token');
@@ -147,6 +147,7 @@ class ProfileScreen extends Component {
       .then((response) => {
         //checks the response code before returning the json
         if (response.status === 201) {
+          this.textInput.clear();
           console.log('Post created');
           this.getPosts();
         } else if (response.status === 401) {
@@ -158,6 +159,26 @@ class ProfileScreen extends Component {
       .catch((error) => {
         console.error(error);
       })
+  }
+
+  saveDraft = async () => {
+    //gets id and posts from async-storage
+    let id = await AsyncStorage.getItem('userID');
+    let savedPosts = await AsyncStorage.getItem('posts' + id);
+
+    if(savedPosts == null){ 
+      savedPosts = []; //creates an empty array if there are no saved posts
+    }
+    else{
+      savedPosts = JSON.parse(savedPosts);
+    }
+
+    savedPosts.push(this.state.postText); //adds new p
+
+    await AsyncStorage.setItem('posts' + id, JSON.stringify(savedPosts)); //saves drafts to an async-storage corrisponding to user's id
+
+    this.textInput.clear();
+    console.log('Post saved to drafts');
   }
 
   editPost = async (postID) => {
@@ -207,8 +228,6 @@ class ProfileScreen extends Component {
           //removes the logged in user's ID and authorisation token from async storage
           await AsyncStorage.removeItem("userID");
           await AsyncStorage.removeItem("token");
-          await AsyncStorage.removeItem("postID");
-          await AsyncStorage.removeItem("profileID");
 
           this.props.navigation.navigate("Login");//navigates to the login
         }
@@ -229,8 +248,8 @@ class ProfileScreen extends Component {
             <Text style={styles.title}>SpaceBook</Text>
           </View>
           <View style={{ flex: 2, alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ fontSize:'100%' }}>Loading...</Text>
-          </View>          
+            <Text style={{ fontSize: '100%' }}>Loading...</Text>
+          </View>
         </View>
       );
     } else {
@@ -259,12 +278,21 @@ class ProfileScreen extends Component {
               multiline={true}
               placeholder="What's on your mind?"
             />
-            <View style={{ marginHorizontal: 10, marginBottom: 10 }}>
-              <Button
-                title='Post'
-                onPress={() => { this.makePost(); this.textInput.clear(); }}
-                color="#19a9f7"
-              />
+            <View style={{ flexDirection: 'row', marginBottom: 5, marginHorizontal: 5 }}>
+              <View style={{ flex: 1, marginRight: 2 }}>
+                <Button
+                  title='Post'
+                  onPress={() => { this.makePost() }}
+                  color="#19a9f7"
+                />
+              </View>
+              <View style={{ flex: 1, marginLeft: 2 }}>
+                <Button
+                  title='Save Draft'
+                  onPress={() => { this.saveDraft() }}
+                  color="#19a9f7"
+                />
+              </View>
             </View>
           </View>
 
@@ -301,6 +329,13 @@ class ProfileScreen extends Component {
           />
 
           <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+            <View style={styles.button}>
+              <Button
+                title='Drafts'
+                onPress={() => this.props.navigation.navigate('DraftsScreen')}
+                color="#19a9f7"
+              />
+            </View>
             <View style={styles.button}>
               <Button
                 title='Edit Profile'
