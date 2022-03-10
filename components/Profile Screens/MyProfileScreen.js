@@ -23,9 +23,7 @@ class ProfileScreen extends Component {
     this.unsubscribe();
   }
 
-  getData = async () => {
-    this.setState({ loading: true })
-
+  getData = async () => { 
     //gets the signed in user's ID and authorisation token in async storage
     let id = await AsyncStorage.getItem('userID');
     let sessionToken = await AsyncStorage.getItem('token');
