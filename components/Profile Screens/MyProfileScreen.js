@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 class ProfileScreen extends Component {
 
   state = {
+    loading: true,
     fName: null, lName: null, email: null, friendCount: null,
     photo: null,
     postText: null,
@@ -23,6 +24,8 @@ class ProfileScreen extends Component {
   }
 
   getData = async () => {
+    this.setState({ loading: true })
+
     //gets the signed in user's ID and authorisation token in async storage
     let id = await AsyncStorage.getItem('userID');
     let sessionToken = await AsyncStorage.getItem('token');
@@ -118,7 +121,10 @@ class ProfileScreen extends Component {
           let date = new Date(post.timestamp)
           post.timestamp = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + " " + date.toLocaleDateString();
         });
-        this.setState({ posts: responseJson })
+        this.setState({
+          loading: false,
+          posts: responseJson
+        })
       })
       .catch((error) => {
         console.error(error);
@@ -218,91 +224,104 @@ class ProfileScreen extends Component {
   }
 
   render() {
-    return (
-      <View style={styles.container}>
+    if (this.state.loading) {
+      return (
+        <View style={styles.container}>
+          <View style={{ alignItems: 'center' }}>
+            <Text style={styles.title}>SpaceBook</Text>
+          </View>
+          <View style={{ flex: 2, alignItems: 'center', justifyContent: 'center' }}>
+            <Text style={{ fontSize:'100%' }}>Loading...</Text>
+          </View>          
+        </View>
+      );
+    } else {
+      return (
+        <View style={styles.container}>
 
-        <View style={{ alignItems: 'center' }}>
+          <View style={{ alignItems: 'center' }}>
 
-          <Text style={styles.title}>SpaceBook</Text>
+            <Text style={styles.title}>SpaceBook</Text>
 
-          <Image source={{ uri: this.state.photo }} style={styles.image} />
-          <Text style={styles.name}>{this.state.fName} {this.state.lName}</Text>
+            <Image source={{ uri: this.state.photo }} style={styles.image} />
+            <Text style={styles.name}>{this.state.fName} {this.state.lName}</Text>
 
-          <View>
-            <Text style={{ fontSize: '100%' }}>Email: {this.state.email}</Text>
-            <Text style={{ fontSize: '100%' }}>Friends: {this.state.friendCount}</Text>
+            <View>
+              <Text style={{ fontSize: '100%' }}>Email: {this.state.email}</Text>
+              <Text style={{ fontSize: '100%' }}>Friends: {this.state.friendCount}</Text>
+            </View>
+
           </View>
 
-        </View>
-
-        <View style={styles.postContainer}>
-          <TextInput
-            ref={input => { this.textInput = input }}
-            style={styles.input}
-            onChangeText={value => this.setState({ postText: value })}
-            multiline={true}
-            placeholder="What's on your mind?"
-          />
-          <View style={{ marginHorizontal: 10, marginBottom: 10 }}>
-            <Button
-              title='Post'
-              onPress={() => { this.makePost(); this.textInput.clear(); }}
-              color="#19a9f7"
+          <View style={styles.postContainer}>
+            <TextInput
+              ref={input => { this.textInput = input }}
+              style={styles.input}
+              onChangeText={value => this.setState({ postText: value })}
+              multiline={true}
+              placeholder="What's on your mind?"
             />
+            <View style={{ marginHorizontal: 10, marginBottom: 10 }}>
+              <Button
+                title='Post'
+                onPress={() => { this.makePost(); this.textInput.clear(); }}
+                color="#19a9f7"
+              />
+            </View>
           </View>
-        </View>
 
-        <FlatList
-          data={this.state.posts}
-          renderItem={({ item }) => (
-            <View style={styles.post}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text style={{ fontWeight: 'bold' }}>{item.author.first_name} {item.author.last_name}</Text>
-                <Text>{item.timestamp}</Text>
-              </View>
-              <Text style={{ margin: 5 }}>{item.text}</Text>
-              <View style={{ justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center' }}>
-                <Text>Likes: {item.numLikes}</Text>
-                <View style={{ flexDirection: 'row' }}>
-                  <View style={{ marginRight: 5 }}>
+          <FlatList
+            data={this.state.posts}
+            renderItem={({ item }) => (
+              <View style={styles.post}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                  <Text style={{ fontWeight: 'bold' }}>{item.author.first_name} {item.author.last_name}</Text>
+                  <Text>{item.timestamp}</Text>
+                </View>
+                <Text style={{ margin: 5 }}>{item.text}</Text>
+                <View style={{ justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center' }}>
+                  <Text>Likes: {item.numLikes}</Text>
+                  <View style={{ flexDirection: 'row' }}>
+                    <View style={{ marginRight: 5 }}>
+                      <Button
+                        title='Edit'
+                        onPress={() => this.editPost(item.post_id)}
+                        color="#19a9f7"
+                      />
+                    </View>
                     <Button
-                      title='Edit'
-                      onPress={() => this.editPost(item.post_id)}
-                      color="#19a9f7"
+                      title='Delete'
+                      onPress={() => this.deletePost(item.post_id)}
+                      color="red"
                     />
                   </View>
-                  <Button
-                    title='Delete'
-                    onPress={() => this.deletePost(item.post_id)}
-                    color="red"
-                  />
                 </View>
               </View>
+            )}
+            keyExtractor={(item, index) => item.post_id.toString()}
+            style={{ padding: 5 }}
+          />
+
+          <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+            <View style={styles.button}>
+              <Button
+                title='Edit Profile'
+                onPress={() => this.props.navigation.navigate('EditProfile')}
+                color="#19a9f7"
+              />
             </View>
-          )}
-          keyExtractor={(item, index) => item.post_id.toString()}
-          style={{ padding: 5 }}
-        />
+            <View style={styles.button}>
+              <Button
+                title='Logout'
+                onPress={() => this.logout()}
+                color="red"
+              />
+            </View>
+          </View>
 
-        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-          <View style={styles.button}>
-            <Button
-              title='Edit Profile'
-              onPress={() => this.props.navigation.navigate('EditProfile')}
-              color="#19a9f7"
-            />
-          </View>
-          <View style={styles.button}>
-            <Button
-              title='Logout'
-              onPress={() => this.logout()}
-              color="red"
-            />
-          </View>
         </View>
-
-      </View>
-    );
+      );
+    }
   }
 }
 
