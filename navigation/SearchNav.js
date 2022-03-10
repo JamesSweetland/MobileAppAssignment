@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import SearchScreen from './SearchScreen';
-import ProfileScreen from './ProfileScreen';
-import FriendsScreen from './FriendsScreen';
+import SearchScreen from '../components/SearchScreen';
+import ProfileScreen from '../components/ProfileScreen';
+import FriendsScreen from '../components/FriendsScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Stack = createNativeStackNavigator();

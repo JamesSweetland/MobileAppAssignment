@@ -1,6 +1,6 @@
-import MainNav from './components/MainNav';
-import LoginScreen from './components/Login Screens/LoginScreen';
-import SignupScreen from './components/Login Screens/SignupScreen';
+import MainNav from './navigation/MainNav';
+import LoginScreen from './components/LoginScreen';
+import SignupScreen from './components/SignupScreen';
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';

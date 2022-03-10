@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import MyProfileScreen from './MyProfileScreen';
-import EditPostScreen from './EditPostScreen';
-import EditProfileScreen from './EditProfileScreen';
-import CameraScreen from './CameraScreen';
+import MyProfileScreen from '../components/MyProfileScreen';
+import EditPostScreen from '../components/EditPostScreen';
+import EditProfileScreen from '../components/EditProfileScreen';
+import CameraScreen from '../components/CameraScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Stack = createNativeStackNavigator();
