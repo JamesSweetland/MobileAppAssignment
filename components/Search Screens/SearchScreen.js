@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 class SearchScreen extends Component {
 
   state = {
+    loading: true,
     query: null,
     results: [],
     friends: []
@@ -45,7 +46,10 @@ class SearchScreen extends Component {
       })
       .then((responseJson) => {
         if (responseJson.length != 0) {
-          this.setState({ friends: responseJson });
+          this.setState({
+            loading: false,
+            friends: responseJson
+          });
         }
       })
       .catch((error) => {
@@ -90,7 +94,19 @@ class SearchScreen extends Component {
   }
 
   render() {
-    if (this.state.results.length == 0) {//if there hasn't been a search yet or there are no results show friends instead
+    if (this.state.loading) {
+      return (
+        <View style={styles.container}>
+          <View style={{ alignItems: 'center' }}>
+            <Text style={styles.title}>SpaceBook</Text>
+          </View>
+          <View style={{ flex: 2, alignItems: 'center', justifyContent: 'center' }}>
+            <Text style={{ fontSize: '100%' }}>Loading...</Text>
+          </View>
+        </View>
+      );
+    }
+    else if (this.state.results.length == 0) {//if there hasn't been a search yet or there are no results show friends instead
       return (
         <View style={styles.container}>
 
