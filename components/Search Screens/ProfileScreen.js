@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 class FriendsScreen extends Component {
 
   state = {
+    loading: true,
     fName: null, lName: null, email: null, friendCount: null,
     photo: null,
     posts: [],
@@ -14,7 +15,7 @@ class FriendsScreen extends Component {
   componentDidMount() {
     //refreshes data if this page is focused
     this.unsubscribe = this.props.navigation.addListener('focus', () => {
-      this.getData();
+      this.getData();      
     });
   }
 
@@ -23,6 +24,8 @@ class FriendsScreen extends Component {
   }
 
   getData = async () => {
+    this.setState({ loading: true })
+
     //gets authorisation token and selected user profile id in async storage
     let id = await AsyncStorage.getItem('profileID');
     let sessionToken = await AsyncStorage.getItem('token');
@@ -101,7 +104,7 @@ class FriendsScreen extends Component {
   getPosts = async () => {
     //gets authorisation token and selected user profile id in async storage
     let id = await AsyncStorage.getItem('profileID');
-    let sessionToken = await AsyncStorage.getItem('token');    
+    let sessionToken = await AsyncStorage.getItem('token');
 
     //sends a get request to the server to get the signed in user's posts
     fetch("http://localhost:3333/api/1.0.0/user/" + id + "/post", {
@@ -124,19 +127,24 @@ class FriendsScreen extends Component {
         }
       })
       .then((responseJson) => {
-        this.setState({ friends: true }) //successfully got posts so user is a friend
-
         responseJson.forEach(post => {
           //converts date and time to a format based on the local settings
           let date = new Date(post.timestamp)
           post.timestamp = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + " " + date.toLocaleDateString();
         });
 
-        this.setState({ posts: responseJson })
+        this.setState({
+          friends: true, //successfully got posts so user is a friend
+          loading: false,
+          posts: responseJson
+        })
       })
       .catch((error) => {
         if (error == 'You must be friends to view posts') {
-          this.setState({ friends: false }) //cannot view posts so users not friends
+          this.setState({
+            loading: false,
+            friends: false
+          }) //cannot view posts so users not friends
         }
         console.error(error);
       })
@@ -203,93 +211,107 @@ class FriendsScreen extends Component {
   }
 
   render() {
-    return (
-      <View style={styles.container}>
-
-        <View style={{ alignItems: 'center' }}>
-
-          <Text style={styles.title}>SpaceBook</Text>
-
-          <Image source={{ uri: this.state.photo }} style={styles.image} />
-          <Text style={styles.name}>{this.state.fName} {this.state.lName}</Text>
-
-          <View>
-            <Text style={{ fontSize: '100%' }}>Email: {this.state.email}</Text>
-            <Text style={{ fontSize: '100%' }}>Friends: {this.state.friendCount}</Text>
+    if (this.state.loading) {
+      return (
+        <View style={styles.container}>
+          <View style={{ alignItems: 'center' }}>
+            <Text style={styles.title}>SpaceBook</Text>
           </View>
+          <View style={{ flex: 2, alignItems: 'center', justifyContent: 'center' }}>
+            <Text style={{ fontSize: '100%' }}>Loading...</Text>
+          </View>
+        </View>
+      );
+    }
+    else {
+      return (
+        <View style={styles.container}>
 
-          {this.state.friends &&
-            <View style={styles.button}>
-              <Button
-                title='View Friends'
-                onPress={() => this.props.navigation.navigate("ViewFriends")}
-                color="#19a9f7"
-              />
+          <View style={{ alignItems: 'center' }}>
+
+            <Text style={styles.title}>SpaceBook</Text>
+
+            <Image source={{ uri: this.state.photo }} style={styles.image} />
+            <Text style={styles.name}>{this.state.fName} {this.state.lName}</Text>
+
+            <View>
+              <Text style={{ fontSize: '100%' }}>Email: {this.state.email}</Text>
+              <Text style={{ fontSize: '100%' }}>Friends: {this.state.friendCount}</Text>
             </View>
-          }
+
+            {this.state.friends &&
+              <View style={styles.button}>
+                <Button
+                  title='View Friends'
+                  onPress={() => this.props.navigation.navigate("ViewFriends")}
+                  color="#19a9f7"
+                />
+              </View>
+            }
+
+            {!this.state.friends &&
+              <View style={styles.button}>
+                <Button
+                  title='Add Friend'
+                  onPress={() => this.addFriend()}
+                  color="#19a9f7"
+                />
+              </View>
+            }
+
+          </View>
 
           {!this.state.friends &&
-            <View style={styles.button}>
-              <Button
-                title='Add Friend'
-                onPress={() => this.addFriend()}
-                color="#19a9f7"
-              />
+            <View style={{ alignItems: 'center', marginVertical: '10vh' }}>
+              <Text>You must be friends to view their posts</Text>
             </View>
           }
 
-        </View>
+          <FlatList
+            data={this.state.posts}
+            renderItem={({ item }) => (
+              <View style={styles.post}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                  <Text style={{ fontWeight: 'bold' }}>{item.author.first_name} {item.author.last_name}</Text>
+                  <Text>{item.timestamp}</Text>
+                </View>
+                <Text style={{ margin: 5 }}>{item.text}</Text>
+                <View style={{ justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center' }}>
+                  <Text>Likes: {item.numLikes}</Text>
+                  <View style={{ flexDirection: 'row' }}>
+                    <View style={{ marginRight: 5 }}>
+                      <Button
+                        title='Like'
+                        onPress={() => this.likePost('POST', item.post_id)}
+                        color="#19a9f7"
+                      />
+                    </View>
 
-        {!this.state.friends &&
-          <View style={{ alignItems: 'center', marginVertical: '10vh' }}>
-            <Text>You must be friends to view their posts</Text>
-          </View>
-        }
-
-        <FlatList
-          data={this.state.posts}
-          renderItem={({ item }) => (
-            <View style={styles.post}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text style={{ fontWeight: 'bold' }}>{item.author.first_name} {item.author.last_name}</Text>
-                <Text>{item.timestamp}</Text>
-              </View>
-              <Text style={{ margin: 5 }}>{item.text}</Text>
-              <View style={{ justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center' }}>
-                <Text>Likes: {item.numLikes}</Text>
-                <View style={{ flexDirection: 'row' }}>
-                  <View style={{ marginRight: 5 }}>
                     <Button
-                      title='Like'
-                      onPress={() => this.likePost('POST', item.post_id)}
-                      color="#19a9f7"
+                      title='Unlike'
+                      onPress={() => this.likePost('DELETE', item.post_id)}
+                      color="red"
                     />
                   </View>
-
-                  <Button
-                    title='Unlike'
-                    onPress={() => this.likePost('DELETE', item.post_id)}
-                    color="red"
-                  />
                 </View>
+
               </View>
-
-            </View>
-          )}
-          keyExtractor={(item, index) => item.post_id.toString()}
-          style={{ padding: 5 }}
-        />
-
-        <View style={styles.button}>
-          <Button
-            title='Back'
-            onPress={() => this.props.navigation.navigate("SearchResults")}
-            color="#19a9f7"
+            )}
+            keyExtractor={(item, index) => item.post_id.toString()}
+            style={{ padding: 5 }}
           />
-        </View>
 
-      </View>
-    );
+          <View style={styles.button}>
+            <Button
+              title='Back'
+              onPress={() => this.props.navigation.navigate("SearchResults")}
+              color="#19a9f7"
+            />
+          </View>
+
+        </View>
+      );
+    }
   }
 }
 

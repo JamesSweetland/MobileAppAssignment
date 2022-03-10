@@ -44,13 +44,11 @@ class SearchScreen extends Component {
           throw 'Something went wrong';
         }
       })
-      .then((responseJson) => {
-        if (responseJson.length != 0) {
-          this.setState({
-            loading: false,
-            friends: responseJson
-          });
-        }
+      .then((responseJson) => {        
+        this.setState({
+          loading: false,
+          friends: responseJson
+        });        
       })
       .catch((error) => {
         console.error(error);

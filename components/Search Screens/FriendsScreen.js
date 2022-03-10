@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 class ViewFriendsScreen extends Component {
 
   state = {
+    loading: true,
     fName: null,
     friends: []
   }
@@ -21,6 +22,7 @@ class ViewFriendsScreen extends Component {
   }
 
   getName = async () => {
+    this.setState({ loading: true })
     //gets authorisation token and selected user profile id in async storage
     let id = await AsyncStorage.getItem('profileID');
     let sessionToken = await AsyncStorage.getItem('token');
@@ -83,7 +85,10 @@ class ViewFriendsScreen extends Component {
       })
       .then((responseJson) => {
         if (responseJson.length != 0) {
-          this.setState({ friends: responseJson });
+          this.setState({ 
+            loading: false,
+            friends: responseJson
+          });
         }
       })
       .catch((error) => {
@@ -105,38 +110,52 @@ class ViewFriendsScreen extends Component {
   }
 
   render() {
-    return (
-      <View style={styles.container}>
-
-        <Text style={styles.title}>SpaceBook</Text>
-        <Text style={styles.text}>{this.state.fName}'s Friends:</Text>
-
-        <FlatList
-          data={this.state.friends}
-          renderItem={({ item }) => (
-            <View style={styles.friendsContainer}>
-              <Text style={{ fontSize: '100%' }}>{item.user_givenname} {item.user_familyname}</Text>
-              <Button
-                title='View Profile'
-                onPress={() => this.viewProfile(item.user_id)}
-                color="#19a9f7"
-              />
-            </View>
-          )}
-          keyExtractor={(item, index) => item.user_id.toString()}
-          style={{ padding: 5 }}
-        />
-
-        <View style={styles.button}>
-          <Button
-            title='Back'
-            onPress={() => this.props.navigation.goBack()}
-            color="#19a9f7"
-          />
+    if (this.state.loading) {
+      return (
+        <View style={styles.container}>
+          <View style={{ alignItems: 'center' }}>
+            <Text style={styles.title}>SpaceBook</Text>
+          </View>
+          <View style={{ flex: 2, alignItems: 'center', justifyContent: 'center' }}>
+            <Text style={{ fontSize: '100%' }}>Loading...</Text>
+          </View>
         </View>
-
-      </View>
-    );
+      );
+    }
+    else{
+      return (
+        <View style={styles.container}>
+  
+          <Text style={styles.title}>SpaceBook</Text>
+          <Text style={styles.text}>{this.state.fName}'s Friends:</Text>
+  
+          <FlatList
+            data={this.state.friends}
+            renderItem={({ item }) => (
+              <View style={styles.friendsContainer}>
+                <Text style={{ fontSize: '100%' }}>{item.user_givenname} {item.user_familyname}</Text>
+                <Button
+                  title='View Profile'
+                  onPress={() => this.viewProfile(item.user_id)}
+                  color="#19a9f7"
+                />
+              </View>
+            )}
+            keyExtractor={(item, index) => item.user_id.toString()}
+            style={{ padding: 5 }}
+          />
+  
+          <View style={styles.button}>
+            <Button
+              title='Back'
+              onPress={() => this.props.navigation.goBack()}
+              color="#19a9f7"
+            />
+          </View>
+  
+        </View>
+      );
+    }    
   }
 }
 
