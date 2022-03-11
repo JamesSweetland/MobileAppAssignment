@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Button, FlatList } from 'react-native';
+import { StyleSheet, Text, View, Button, FlatList, TextInput } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 class DraftsScreen extends Component {
